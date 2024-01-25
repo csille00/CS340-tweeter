@@ -1,12 +1,13 @@
 import "./Login.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { UserInfoContext } from "../../userInfo/UserInfoProvider";
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../../toaster/ToastListenerHook";
+import AuthenticationFields from "../AuthenticationFields";
 
 interface Props {
   originalUrl?: string;
@@ -61,31 +62,7 @@ const Login = (props: Props) => {
   };
 
   const inputFieldGenerator = () => {
-    return (
-      <>
-        <div className="form-floating">
-          <input
-            type="text"
-            className="form-control"
-            size={50}
-            id="aliasInput"
-            placeholder="name@example.com"
-            onChange={(event) => setAlias(event.target.value)}
-          />
-          <label htmlFor="aliasInput">Alias</label>
-        </div>
-        <div className="form-floating mb-3">
-          <input
-            type="password"
-            className="form-control bottom"
-            id="passwordInput"
-            placeholder="Password"
-            onChange={(event) => setPassword(event.target.value)}
-          />
-          <label htmlFor="passwordInput">Password</label>
-        </div>
-      </>
-    );
+      return <AuthenticationFields setAlias={setAlias} setPassword={setPassword}/>
   };
 
   const switchAuthenticationMethodGenerator = () => {

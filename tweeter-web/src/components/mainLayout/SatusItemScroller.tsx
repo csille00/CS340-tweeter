@@ -1,17 +1,24 @@
-import {useContext} from "react";
-import {UserInfoContext} from "../userInfo/UserInfoProvider";
-import {AuthToken, FakeData, Status, User} from "tweeter-shared";
-import {useState, useRef, useEffect} from "react";
+import {AuthToken, Status, User} from "tweeter-shared";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {Link} from "react-router-dom";
-import Post from "../statusItem/Post";
-import useToastListener from "../toaster/ToastListenerHook";
 import StatusItem from "../statusItem/StatusItem";
+import useToastListener from "../toaster/ToastListenerHook";
+import {useContext, useEffect, useRef, useState} from "react";
+import {UserInfoContext} from "../userInfo/UserInfoProvider";
+import {PAGE_SIZE} from "./UserItemScroller";
 
-export const PAGE_SIZE = 10;
+interface Props {
+    loadItems: (
+        authToken: AuthToken,
+        user: User,
+        pageSize: number,
+        lastItem: Status | null
+    ) => Promise<[Status[], boolean]>;
+    itemDescription: string;
+}
 
-const FeedScroller = () => {
-    const {displayErrorMessage} = useToastListener();
+const UserItemScroller =(props: Props) => {
+
+    const { displayErrorMessage } = useToastListener();
     const [items, setItems] = useState<Status[]>([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
     const [lastItem, setLastItem] = useState<Status | null>(null);
@@ -24,7 +31,7 @@ const FeedScroller = () => {
     const addItems = (newItems: Status[]) =>
         setItems([...itemsReference.current, ...newItems]);
 
-    const {displayedUser, setDisplayedUser, currentUser, authToken} =
+    const { displayedUser, authToken } =
         useContext(UserInfoContext);
 
     // Load initial items
@@ -36,7 +43,7 @@ const FeedScroller = () => {
     const loadMoreItems = async () => {
         try {
             if (hasMoreItems) {
-                let [newItems, hasMore] = await loadMoreFeedItems(
+                let [newItems, hasMore] = await props.loadItems(
                     authToken!,
                     displayedUser!,
                     PAGE_SIZE,
@@ -49,19 +56,9 @@ const FeedScroller = () => {
             }
         } catch (error) {
             displayErrorMessage(
-                `Failed to load feed items because of exception: ${error}`
+                `Failed to load ${props.itemDescription} items because of exception: ${error}`
             );
         }
-    };
-
-    const loadMoreFeedItems = async (
-        authToken: AuthToken,
-        user: User,
-        pageSize: number,
-        lastItem: Status | null
-    ): Promise<[Status[], boolean]> => {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
     };
 
 
@@ -85,6 +82,6 @@ const FeedScroller = () => {
             </InfiniteScroll>
         </div>
     );
-};
+}
 
-export default FeedScroller;
+export default UserItemScroller
