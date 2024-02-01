@@ -1,55 +1,17 @@
 import {AuthToken, FakeData, Status, User} from "tweeter-shared";
-import {Link} from "react-router-dom";
+import {Link, useNavigation} from "react-router-dom";
 import Post from "./Post";
-import React, {useContext} from "react";
-import {UserInfoContext} from "../userInfo/UserInfoProvider";
+import React from "react";
 import useToastListener from "../toaster/ToastListenerHook";
+import useUserInfoListener from "../userInfo/UserInfoListenerHook";
 
 interface Props {
     status: Status;
 }
 
 const StatusItem = (props: Props) => {
+    const { navigateToUser } = useNavigation();
 
-    const {displayErrorMessage} = useToastListener();
-    const {setDisplayedUser, currentUser, authToken} =
-        useContext(UserInfoContext);
-
-    // Required to allow the addItems method to see the current value of 'items'
-    // instead of the value from when the closure was created.
-
-    const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
-        event.preventDefault();
-
-        try {
-            let alias = extractAlias(event.target.toString());
-
-            let user = await getUser(authToken!, alias);
-
-            if (!!user) {
-                if (currentUser!.equals(user)) {
-                    setDisplayedUser(currentUser!);
-                } else {
-                    setDisplayedUser(user);
-                }
-            }
-        } catch (error) {
-            displayErrorMessage(`Failed to get user because of exception: ${error}`);
-        }
-    };
-
-    const extractAlias = (value: string): string => {
-        let index = value.indexOf("@");
-        return value.substring(index);
-    };
-
-    const getUser = async (
-        authToken: AuthToken,
-        alias: string
-    ): Promise<User | null> => {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.findUserByAlias(alias);
-    };
     return (
         <div className="col bg-light mx-0 px-0">
             <div className="container px-0">

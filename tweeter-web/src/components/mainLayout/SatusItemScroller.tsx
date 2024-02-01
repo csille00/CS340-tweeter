@@ -3,8 +3,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import StatusItem from "../statusItem/StatusItem";
 import useToastListener from "../toaster/ToastListenerHook";
 import {useContext, useEffect, useRef, useState} from "react";
-import {UserInfoContext} from "../userInfo/UserInfoProvider";
 import {PAGE_SIZE} from "./UserItemScroller";
+import useUserInfoListener from "../userInfo/UserInfoListenerHook";
 
 interface Props {
     loadItems: (
@@ -17,7 +17,6 @@ interface Props {
 }
 
 const UserItemScroller =(props: Props) => {
-
     const { displayErrorMessage } = useToastListener();
     const [items, setItems] = useState<Status[]>([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
@@ -32,7 +31,7 @@ const UserItemScroller =(props: Props) => {
         setItems([...itemsReference.current, ...newItems]);
 
     const { displayedUser, authToken } =
-        useContext(UserInfoContext);
+        useUserInfoListener();
 
     // Load initial items
     useEffect(() => {
