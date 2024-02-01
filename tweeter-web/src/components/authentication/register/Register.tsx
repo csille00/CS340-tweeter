@@ -7,7 +7,7 @@ import { AuthToken, FakeData, User } from "tweeter-shared";
 import { Buffer } from "buffer";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
-import useUserInfoListener from "../../userInfo/UserInfoListenerHook";
+import useUserInfoHook from "../../userInfo/UserInfoHook";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -22,7 +22,7 @@ const Register = () => {
   rememberMeRef.current = rememberMe;
 
   const navigate = useNavigate();
-  const { updateUserInfo } = useUserInfoListener();
+  const { updateUserInfo } = useUserInfoHook();
   const { displayErrorMessage } = useToastListener();
 
   const checkSubmitButtonStatus = (): boolean => {

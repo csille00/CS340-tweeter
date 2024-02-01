@@ -7,7 +7,6 @@ import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
-import useUserInfoListener from "../../userInfo/UserInfoListenerHook";
 import useUserInfoHook from "../../userInfo/UserInfoHook";
 
 interface Props {
@@ -20,7 +19,7 @@ const Login = (props: Props) => {
   const [rememberMe, setRememberMe] = useState(false);
 
   const navigate = useNavigate();
-  const { updateUserInfo } = useUserInfoListener();
+  const { updateUserInfo } = useUserInfoHook();
   const { displayErrorMessage } = useToastListener();
 
   const rememberMeRef = useRef(rememberMe);

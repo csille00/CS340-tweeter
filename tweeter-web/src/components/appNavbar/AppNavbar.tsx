@@ -4,11 +4,11 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import Image from "react-bootstrap/Image";
 import { AuthToken } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
-import useUserInfoListener from "../userInfo/UserInfoListenerHook";
+import useUserInfoHook from "../userInfo/UserInfoHook";
 
 const AppNavbar = () => {
   const location = useLocation();
-  const { authToken, clearUserInfo } = useUserInfoListener();
+  const { authToken, clearUserInfo } = useUserInfoHook();
   const navigate = useNavigate();
   const { displayInfoMessage, displayErrorMessage, clearLastInfoMessage } =
     useToastListener();

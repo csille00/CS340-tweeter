@@ -2,9 +2,9 @@ import {AuthToken, Status, User} from "tweeter-shared";
 import InfiniteScroll from "react-infinite-scroll-component";
 import StatusItem from "../statusItem/StatusItem";
 import useToastListener from "../toaster/ToastListenerHook";
-import {useContext, useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {PAGE_SIZE} from "./UserItemScroller";
-import useUserInfoListener from "../userInfo/UserInfoListenerHook";
+import useUserInfoHook from "../userInfo/UserInfoHook";
 
 interface Props {
     loadItems: (
@@ -31,7 +31,7 @@ const UserItemScroller =(props: Props) => {
         setItems([...itemsReference.current, ...newItems]);
 
     const { displayedUser, authToken } =
-        useUserInfoListener();
+        useUserInfoHook();
 
     // Load initial items
     useEffect(() => {
