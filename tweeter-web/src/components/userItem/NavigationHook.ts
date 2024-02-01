@@ -7,10 +7,12 @@ interface NavHook {
     navigateToUser: (event: React.MouseEvent) => Promise<void>;
 }
 
-const useNavigation = (): NavHook => {
+const useNavigationHook = (): NavHook => {
+
     const { displayErrorMessage } = useToastListener();
     const { setDisplayedUser, currentUser, authToken } =
         useUserInfoListener();
+
     const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
         event.preventDefault();
 
@@ -47,4 +49,4 @@ const useNavigation = (): NavHook => {
     return { navigateToUser: navigateToUser }
 }
 
-export default useNavigation;
+export default useNavigationHook;

@@ -1,16 +1,15 @@
-import {AuthToken, FakeData, Status, User} from "tweeter-shared";
-import {Link, useNavigation} from "react-router-dom";
+import {Status} from "tweeter-shared";
+import {Link} from "react-router-dom";
 import Post from "./Post";
 import React from "react";
-import useToastListener from "../toaster/ToastListenerHook";
-import useUserInfoListener from "../userInfo/UserInfoListenerHook";
+import useNavigationHook from "../userItem/NavigationHook";
 
 interface Props {
     status: Status;
 }
 
 const StatusItem = (props: Props) => {
-    const { navigateToUser } = useNavigation();
+    const { navigateToUser } = useNavigationHook();
 
     return (
         <div className="col bg-light mx-0 px-0">
