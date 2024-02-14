@@ -3,11 +3,10 @@ import "bootstrap/dist/css/bootstrap.css";
 import { ChangeEvent, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
-import { AuthToken, FakeData, User } from "tweeter-shared";
-import { Buffer } from "buffer";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
 import useUserInfoHook from "../../userInfo/UserInfoHook";
+import {RegisterPresenter, RegisterView} from "../../../presenter/RegisterPresenter";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -18,87 +17,28 @@ const Register = () => {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const rememberMeRef = useRef(rememberMe);
-  rememberMeRef.current = rememberMe;
-
   const navigate = useNavigate();
   const { updateUserInfo } = useUserInfoHook();
   const { displayErrorMessage } = useToastListener();
 
-  const checkSubmitButtonStatus = (): boolean => {
-    return !firstName || !lastName || !alias || !password || !imageUrl;
+  const listener: RegisterView = {
+    setAlias: setAlias,
+    setPassword: setPassword,
+    displayErrorMessage: displayErrorMessage,
+    updateUserInfo: updateUserInfo,
+    navigate: navigate,
+    setImageUrl: setImageUrl,
+    setImageBytes: setImageBytes
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    handleImageFile(file);
-  };
+  const [presenter] = useState(new RegisterPresenter(listener));
 
-  const handleImageFile = (file: File | undefined) => {
-    if (file) {
-      setImageUrl(URL.createObjectURL(file));
+  const rememberMeRef = useRef(rememberMe);
+  rememberMeRef.current = rememberMe;
 
-      const reader = new FileReader();
-      reader.onload = (event: ProgressEvent<FileReader>) => {
-        const imageStringBase64 = event.target?.result as string;
-
-        // Remove unnecessary file metadata from the start of the string.
-        const imageStringBase64BufferContents =
-          imageStringBase64.split("base64,")[1];
-
-        const bytes: Uint8Array = Buffer.from(
-          imageStringBase64BufferContents,
-          "base64"
-        );
-
-        setImageBytes(bytes);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setImageUrl("");
-      setImageBytes(new Uint8Array());
-    }
-  };
-
-  const doRegister = async () => {
-    try {
-      let [user, authToken] = await register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageBytes
-      );
-
-      updateUserInfo(user, user, authToken, rememberMeRef.current);
-      navigate("/");
-    } catch (error) {
-      displayErrorMessage(
-        `Failed to register user because of exception: ${error}`
-      );
-    }
-  };
-
-  const register = async (
-    firstName: string,
-    lastName: string,
-    alias: string,
-    password: string,
-    userImageBytes: Uint8Array
-  ): Promise<[User, AuthToken]> => {
-    // Not neded now, but will be needed when you make the request to the server in milestone 3
-    let imageStringBase64: string =
-      Buffer.from(userImageBytes).toString("base64");
-
-    // TODO: Replace with the result of calling the server
-    let user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid registration");
-    }
-
-    return [user, FakeData.instance.authToken];
-  };
+  const checkSubmitButtonStatus = (): boolean => !firstName || !lastName || !alias || !password || !imageUrl;
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => presenter.handleImageFile(event.target.files?.[0]);
+  const doRegister = async () => presenter.doRegister(firstName, lastName, alias, password, rememberMeRef.current)
 
   const inputFieldGenerator = () => {
     return (
