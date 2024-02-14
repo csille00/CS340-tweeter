@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React from "react";
 interface Props {
     setAlias: React.Dispatch<React.SetStateAction<string>>,
     setPassword: React.Dispatch<React.SetStateAction<string>>

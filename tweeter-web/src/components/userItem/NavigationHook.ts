@@ -2,6 +2,7 @@ import {AuthToken, FakeData, User} from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
 import React from "react";
 import useUserInfoHook from "../userInfo/UserInfoHook";
+import {UserService} from "../../model/UserService";
 
 interface NavHook {
     navigateToUser: (event: React.MouseEvent) => Promise<void>;
