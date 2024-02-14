@@ -31,7 +31,7 @@ const Login = (props: Props) => {
 
   const doLogin = async () => {
     try {
-      let [user, authToken] = await login(alias, password);
+      let [user, authToken] = await login();
 
       updateUserInfo(user, user, authToken, rememberMeRef.current);
 
@@ -47,10 +47,7 @@ const Login = (props: Props) => {
     }
   };
 
-  const login = async (
-    alias: string,
-    password: string
-  ): Promise<[User, AuthToken]> => {
+  const login = async (): Promise<[User, AuthToken]> => {
     // TODO: Replace with the result of calling the server
     let user = FakeData.instance.firstUser;
 

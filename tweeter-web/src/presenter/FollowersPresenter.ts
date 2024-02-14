@@ -1,0 +1,35 @@
+import {useState} from "react";
+import {AuthToken, User} from "tweeter-shared";
+import {FollowService} from "../model/FollowService";
+import useNavigationHook from "../components/userItem/NavigationHook";
+import {UserItemPresenter, UserItemView} from "./UserItemPresenter";
+
+export const PAGE_SIZE = 10;
+
+export class FollowersPresenter extends UserItemPresenter {
+
+    private service: FollowService;
+
+    private lastItem: User | null = null;
+
+    public constructor(view: UserItemView) {
+        super(view);
+        this.service = new FollowService();
+    }
+
+    public async loadMoreItems (auth: AuthToken, displayedUser: User){
+        try {
+            if (this.hasMoreItems) {
+                let [newItems, hasMore] = await this.service.loadMoreFollowers(auth, displayedUser, PAGE_SIZE, this.lastItem)
+
+                this.hasMoreItems = hasMore;
+                this.lastItem = newItems[newItems.length - 1];
+                this.view.addItems(newItems);
+            }
+        } catch (error) {
+            this.view.displayErrorMessage(
+                `Failed to load followers because of exception: ${error}`
+            );
+        }
+    };
+}

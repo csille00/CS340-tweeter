@@ -4,8 +4,6 @@ interface Props {
     setPassword: React.Dispatch<React.SetStateAction<string>>
 }
 const AuthenticationFields = (props: Props) => {
-    const [alias, setAlias] = useState("");
-    const [password, setPassword] = useState("");
     return (
         <>
             <div className="form-floating">

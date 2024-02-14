@@ -3,8 +3,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import StatusItem from "../statusItem/StatusItem";
 import useToastListener from "../toaster/ToastListenerHook";
 import {useEffect, useRef, useState} from "react";
-import {PAGE_SIZE} from "./UserItemScroller";
 import useUserInfoHook from "../userInfo/UserInfoHook";
+import {PAGE_SIZE} from "../../presenter/FollowersPresenter";
 
 interface Props {
     loadItems: (
