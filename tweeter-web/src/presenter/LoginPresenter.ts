@@ -1,6 +1,5 @@
 import {UserService} from "../model/UserService";
-import useUserInfoHook from "../components/userInfo/UserInfoHook";
-import {NavigateFunction, useNavigate} from "react-router-dom";
+import {NavigateFunction} from "react-router-dom";
 import {AuthToken, User} from "tweeter-shared";
 
 export interface LoginView {

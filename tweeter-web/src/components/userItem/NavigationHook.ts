@@ -1,8 +1,7 @@
-import {AuthToken, FakeData, User} from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
-import React from "react";
+import React, {useState} from "react";
 import useUserInfoHook from "../userInfo/UserInfoHook";
-import {UserService} from "../../model/UserService";
+import {NavigationPresenter, NavigationView} from "../../presenter/NavigationPresenter";
 
 interface NavHook {
     navigateToUser: (event: React.MouseEvent) => Promise<void>;
@@ -13,37 +12,16 @@ const useNavigationHook = (): NavHook => {
     const { displayErrorMessage } = useToastListener();
     const { setDisplayedUser, currentUser, authToken } = useUserInfoHook();
 
+    const listener: NavigationView = {
+        displayErrorMessage: displayErrorMessage,
+        setDisplayedUser: setDisplayedUser
+    }
+
+    const [presenter] = useState(new NavigationPresenter(listener))
+
     const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
         event.preventDefault();
-
-        try {
-            let alias = extractAlias(event.target.toString());
-
-            let user = await getUser(authToken!, alias);
-
-            if (!!user) {
-                if (currentUser!.equals(user)) {
-                    setDisplayedUser(currentUser!);
-                } else {
-                    setDisplayedUser(user);
-                }
-            }
-        } catch (error) {
-            displayErrorMessage(`Failed to get user because of exception: ${error}`);
-        }
-    };
-
-    const extractAlias = (value: string): string => {
-        let index = value.indexOf("@");
-        return value.substring(index);
-    };
-
-    const getUser = async (
-        authToken: AuthToken,
-        alias: string
-    ): Promise<User | null> => {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.findUserByAlias(alias);
+        await presenter.navigateToUser(authToken, event.target.toString(), currentUser)
     };
 
     return { navigateToUser: navigateToUser }

@@ -70,7 +70,7 @@ export class UserInfoPresenter {
         // Pause so we can see the following message. Remove when connected to the server
         await new Promise((f) => setTimeout(f, 2000));
 
-        // TODO: Call the server
+        // TODO: Call the server...is this supposed to be in a service class?
 
         let followersCount = await this.service.getFollowersCount(authToken, userToFollow);
         let followeesCount = await this.service.getFolloweesCount(authToken, userToFollow);
@@ -85,7 +85,7 @@ export class UserInfoPresenter {
         // Pause so we can see the unfollowing message. Remove when connected to the server
         await new Promise((f) => setTimeout(f, 2000));
 
-        // TODO: Call the server
+        // TODO: Call the server...is this supposed to be in a service class?
 
         let followersCount = await this.service.getFollowersCount(authToken, userToUnfollow);
         let followeesCount = await this.service.getFolloweesCount(authToken, userToUnfollow);
