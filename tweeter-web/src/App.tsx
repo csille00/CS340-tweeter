@@ -17,6 +17,9 @@ import useUserInfoHook from "./components/userInfo/UserInfoHook";
 import {FollowingPresenter} from "./presenter/FollowingPresenter";
 import {UserItemView} from "./presenter/UserItemPresenter";
 import {FollowersPresenter} from "./presenter/FollowersPresenter";
+import {StatusItemView} from "./presenter/StatusItemPresenter";
+import {StatusItemFeedPresenter} from "./presenter/StatusItemFeedPresenter";
+import {StatusItemStoryPresenter} from "./presenter/StatusItemStoryPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfoHook();
@@ -41,33 +44,20 @@ const App = () => {
 
 const AuthenticatedRoutes = () => {
 
-
-    const loadMoreStoryItems = async (
-        authToken: AuthToken,
-        user: User,
-        pageSize: number,
-        lastItem: Status | null
-    ): Promise<[Status[], boolean]> => {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
-    };
-
-    const loadMoreFeedItems = async (
-        authToken: AuthToken,
-        user: User,
-        pageSize: number,
-        lastItem: Status | null
-    ): Promise<[Status[], boolean]> => {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
-    };
-
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<Navigate to="/feed" />} />
-        <Route path="feed" element={<SatusItemScroller loadItems={loadMoreFeedItems} itemDescription={"feed"}/>} />
-        <Route path="story" element={<SatusItemScroller loadItems={loadMoreStoryItems} itemDescription={"story"}/>} />
+        <Route path="feed" element={
+            <SatusItemScroller
+                presenterGenerator={(view: StatusItemView) => new StatusItemFeedPresenter(view)}
+            />}
+        />
+        <Route path="story" element={
+            <SatusItemScroller
+                presenterGenerator={(view: StatusItemView) => new StatusItemStoryPresenter(view)}
+            />}
+        />
         <Route
           path="following"
           element={

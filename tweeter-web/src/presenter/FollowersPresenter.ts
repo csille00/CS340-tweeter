@@ -7,7 +7,6 @@ export const PAGE_SIZE = 10;
 export class FollowersPresenter extends UserItemPresenter {
 
     private service: FollowService;
-
     private lastItem: User | null = null;
 
     public constructor(view: UserItemView) {

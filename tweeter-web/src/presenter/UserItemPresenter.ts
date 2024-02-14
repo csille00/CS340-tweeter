@@ -1,5 +1,4 @@
 import {AuthToken, User} from "tweeter-shared";
-import UserItem from "../components/userItem/UserItem";
 
 export interface UserItemView {
     addItems: (items: User[]) => void;
@@ -9,7 +8,7 @@ export abstract class UserItemPresenter {
     private readonly _view: UserItemView;
     private _hasMoreItems = true;
 
-    protected constructor(view: UserItemView) {
+    protected constructor (view: UserItemView) {
         this._view = view;
     }
 

@@ -37,9 +37,7 @@ const UserItemScroller = (props: Props) => {
 
   const [presenter] = useState(props.presenterGenerator(listener))
 
-const loadMoreItems = async () => {
-    presenter.loadMoreItems(authToken!, displayedUser!);
-  }
+const loadMoreItems = async () => presenter.loadMoreItems(authToken!, displayedUser!);
 
   return (
     <div className="container px-0 overflow-visible vh-100">

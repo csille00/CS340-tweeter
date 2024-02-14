@@ -4,23 +4,16 @@ import StatusItem from "../statusItem/StatusItem";
 import useToastListener from "../toaster/ToastListenerHook";
 import {useEffect, useRef, useState} from "react";
 import useUserInfoHook from "../userInfo/UserInfoHook";
-import {PAGE_SIZE} from "../../presenter/FollowersPresenter";
+import {StatusItemPresenter, StatusItemView} from "../../presenter/StatusItemPresenter";
 
 interface Props {
-    loadItems: (
-        authToken: AuthToken,
-        user: User,
-        pageSize: number,
-        lastItem: Status | null
-    ) => Promise<[Status[], boolean]>;
-    itemDescription: string;
+    presenterGenerator: (view: StatusItemView) => StatusItemPresenter;
 }
 
 const UserItemScroller =(props: Props) => {
     const { displayErrorMessage } = useToastListener();
     const [items, setItems] = useState<Status[]>([]);
-    const [hasMoreItems, setHasMoreItems] = useState(true);
-    const [lastItem, setLastItem] = useState<Status | null>(null);
+    const [hasMoreItems] = useState(true);
 
     // Required to allow the addItems method to see the current value of 'items'
     // instead of the value from when the closure was created.
@@ -39,27 +32,14 @@ const UserItemScroller =(props: Props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const loadMoreItems = async () => {
-        try {
-            if (hasMoreItems) {
-                let [newItems, hasMore] = await props.loadItems(
-                    authToken!,
-                    displayedUser!,
-                    PAGE_SIZE,
-                    lastItem
-                );
+    const listener: StatusItemView = {
+        addItems: addItems,
+        displayErrorMessage: displayErrorMessage
+    }
 
-                setHasMoreItems(hasMore);
-                setLastItem(newItems[newItems.length - 1]);
-                addItems(newItems);
-            }
-        } catch (error) {
-            displayErrorMessage(
-                `Failed to load ${props.itemDescription} items because of exception: ${error}`
-            );
-        }
-    };
+    const [presenter] = useState(props.presenterGenerator(listener))
 
+    const loadMoreItems = async () => presenter.loadMoreItems(authToken, displayedUser)
 
     return (
         <div className="container px-0 overflow-visible vh-100">
