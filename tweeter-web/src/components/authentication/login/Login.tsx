@@ -26,7 +26,9 @@ const Login = (props: Props) => {
   const listener: LoginView = {
     setAlias: setAlias,
     setPassword: setPassword,
-    displayErrorMessage: displayErrorMessage
+    displayErrorMessage: displayErrorMessage,
+    updateUserInfo: updateUserInfo,
+    navigate: navigate
   }
 
   const [presenter] = useState(new LoginPresenter(listener))
@@ -34,15 +36,11 @@ const Login = (props: Props) => {
   const rememberMeRef = useRef(rememberMe);
   rememberMeRef.current = rememberMe;
 
-  const checkSubmitButtonStatus = (): boolean => {
-    return !alias || !password;
-  };
+  const checkSubmitButtonStatus = (): boolean => !alias || !password;
 
-  const doLogin = async () => await presenter.doLogin(alias, password, rememberMe, props.originalUrl)
+  const doLogin = async () => await presenter.doLogin(alias, password, rememberMe, props.originalUrl);
 
-  const inputFieldGenerator = () => {
-      return <AuthenticationFields setAlias={setAlias} setPassword={setPassword}/>
-  };
+  const inputFieldGenerator = () => <AuthenticationFields setAlias={setAlias} setPassword={setPassword}/>
 
   const switchAuthenticationMethodGenerator = () => {
     return (

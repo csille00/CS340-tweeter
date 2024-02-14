@@ -1,18 +1,24 @@
 import {UserService} from "../model/UserService";
 import useUserInfoHook from "../components/userInfo/UserInfoHook";
-import {useNavigate} from "react-router-dom";
+import {NavigateFunction, useNavigate} from "react-router-dom";
+import {AuthToken, User} from "tweeter-shared";
 
 export interface LoginView {
     setAlias: (alias: string) => void;
     setPassword: (password: string) => void;
     displayErrorMessage: (meesage: string) => void;
+    updateUserInfo: (
+        currentUser: User,
+        displayedUser: User | null,
+        authToken: AuthToken,
+        remember: boolean
+    ) => void;
+    navigate: NavigateFunction
 }
 
 export class LoginPresenter {
     private view: LoginView;
     private service: UserService
-    private updateUserInfo = useUserInfoHook()
-    private navigate = useNavigate();
 
     public constructor(view: LoginView) {
         this.view = view;
@@ -22,13 +28,12 @@ export class LoginPresenter {
     public async doLogin(alias: string, password: string, rememberMe: boolean, originalUrl: string | undefined)  {
         try {
             let [user, authToken] = await this.service.login();
-
-            this.updateUserInfo.updateUserInfo(user, user, authToken, rememberMe);
+            this.view.updateUserInfo(user, user, authToken, rememberMe);
 
             if (!!originalUrl) {
-                this.navigate(originalUrl);
+                this.view.navigate(originalUrl);
             } else {
-                this.navigate("/");
+                this.view.navigate("/");
             }
         } catch (error) {
             this.view.displayErrorMessage(
