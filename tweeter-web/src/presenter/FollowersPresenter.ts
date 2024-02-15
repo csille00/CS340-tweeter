@@ -14,10 +14,10 @@ export class FollowersPresenter extends UserItemPresenter {
         this.service = new FollowService();
     }
 
-    public async loadMoreItems (auth: AuthToken, displayedUser: User){
+    public async loadMoreItems (auth: AuthToken, user: User){
         try {
             if (this.hasMoreItems) {
-                let [newItems, hasMore] = await this.service.loadMoreFollowers(auth, displayedUser, PAGE_SIZE, this.lastItem)
+                let [newItems, hasMore] = await this.service.loadMoreFollowers(auth, user, PAGE_SIZE, this.lastItem)
 
                 this.hasMoreItems = hasMore;
                 this.lastItem = newItems[newItems.length - 1];

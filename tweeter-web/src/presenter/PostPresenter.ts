@@ -31,11 +31,11 @@ export class PostPresenter {
         // TODO: Call the server to post the status
     };
 
-    public async submitPost (auth: AuthToken|null, post: string, currentUser: User|null) {
+    public async submitPost (auth: AuthToken|null, post: string, user: User|null) {
         try {
             this.view.displayInfoMessage("Posting status...", 0);
 
-            await this.postStatus(auth!, new Status(post, currentUser!, Date.now()));
+            await this.postStatus(auth!, new Status(post, user!, Date.now()));
 
             this.view.clearLastInfoMessage();
             this.view.setPost("");

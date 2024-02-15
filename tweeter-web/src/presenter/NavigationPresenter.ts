@@ -17,14 +17,14 @@ export class NavigationPresenter {
 
     private extractAlias = (value: string) => value.substring(value.indexOf("@"));
 
-    public async navigateToUser (auth: AuthToken|null, rawAlias: string, currentUser: User|null): Promise<void> {
+    public async navigateToUser (auth: AuthToken|null, rawAlias: string, user: User|null): Promise<void> {
         try {
             let alias = this.extractAlias(rawAlias);
             let user = await this.service.getUser(auth!, alias);
 
             if (!!user) {
-                if (currentUser!.equals(user)) {
-                    this.view.setDisplayedUser(currentUser!);
+                if (user!.equals(user)) {
+                    this.view.setDisplayedUser(user!);
                 } else {
                     this.view.setDisplayedUser(user);
                 }

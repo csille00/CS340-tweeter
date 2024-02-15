@@ -12,10 +12,10 @@ export class StatusItemFeedPresenter extends StatusItemPresenter {
         this.service = new StatusService();
     }
 
-    public async loadMoreItems (auth: AuthToken, displayedUser: User){
+    public async loadMoreItems (auth: AuthToken, user: User){
         try {
             if (this.hasMoreItems) {
-                let [newItems, hasMore] = await this.service.loadMoreFeedItems(auth, displayedUser, PAGE_SIZE, this.lastItem)
+                let [newItems, hasMore] = await this.service.loadMoreFeedItems(auth, user, PAGE_SIZE, this.lastItem)
 
                 this.hasMoreItems = hasMore;
                 this.lastItem = newItems[newItems.length - 1];
