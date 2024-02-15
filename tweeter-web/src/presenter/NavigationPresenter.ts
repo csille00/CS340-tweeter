@@ -20,7 +20,6 @@ export class NavigationPresenter {
     public async navigateToUser (auth: AuthToken|null, rawAlias: string, currentUser: User|null): Promise<void> {
         try {
             let alias = this.extractAlias(rawAlias);
-
             let user = await this.service.getUser(auth!, alias);
 
             if (!!user) {

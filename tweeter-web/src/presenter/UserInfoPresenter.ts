@@ -1,11 +1,18 @@
 import {AuthToken, User} from "tweeter-shared";
 import {UserService} from "../model/UserService";
+import React from "react";
 
 export interface UserInfoView {
     setIsFollower: (value: boolean) => void,
     setFolloweesCount: (num: number) => void,
     setFollowersCount: (num: number) => void,
-    displayErrorMessage: (message: string) => void;
+    displayInfoMessage: (
+        message: string,
+        duration: number,
+        bootstrapClasses?: string
+    ) => void;
+    displayErrorMessage: (err: string) => void
+    clearLastInfoMessage: () => void;
 }
 
 export class UserInfoPresenter {
@@ -92,5 +99,59 @@ export class UserInfoPresenter {
 
         return [followersCount, followeesCount];
     };
+
+    public async followDisplayedUser (
+        authToken: AuthToken|null,
+        displayedUser: User|null
+    ) {
+
+        try {
+            this.view.displayInfoMessage(`Adding ${displayedUser!.name} to followers...`, 0);
+
+            let [followersCount, followeesCount] = await this.follow(
+                authToken!,
+                displayedUser!
+            );
+
+            this.view.clearLastInfoMessage();
+
+            this.view.setIsFollower(true);
+            this.view.setFollowersCount(followersCount);
+            this.view.setFolloweesCount(followeesCount);
+        } catch (error) {
+            this.view.displayErrorMessage(
+                `Failed to follow user because of exception: ${error}`
+            );
+        }
+    };
+
+    public async unfollowDisplayedUser (
+        authToken: AuthToken|null,
+        displayedUser: User|null
+    ){
+
+        try {
+            this.view.displayInfoMessage(
+                `Removing ${displayedUser!.name} from followers...`,
+                0
+            );
+
+            let [followersCount, followeesCount] = await this.unfollow(
+                authToken!,
+                displayedUser!
+            );
+
+            this.view.clearLastInfoMessage();
+
+            this.view.setIsFollower(false);
+            this.view.setFollowersCount(followersCount);
+            this.view.setFolloweesCount(followeesCount);
+        } catch (error) {
+            this.view.displayErrorMessage(
+                `Failed to unfollow user because of exception: ${error}`
+            );
+        }
+    };
+
 
 }
