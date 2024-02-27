@@ -6,8 +6,6 @@ import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfoHook from "../userInfo/UserInfoHook";
 import {UserItemPresenter, UserItemView} from "../../presenter/UserItemPresenter";
 
-
-
 interface Props {
   presenterGenerator: (view: UserItemView) => UserItemPresenter;
 }

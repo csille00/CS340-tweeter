@@ -3,7 +3,6 @@ import {NavigateFunction} from "react-router-dom";
 import {UserService} from "../model/UserService";
 import {Buffer} from "buffer";
 import {Presenter, View} from "./Presenter";
-import {UserItemView} from "./UserItemPresenter";
 
 export interface RegisterView extends View {
     setAlias: (alias: string) => void;

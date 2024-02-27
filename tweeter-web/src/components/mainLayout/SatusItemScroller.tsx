@@ -1,4 +1,4 @@
-import {AuthToken, Status, User} from "tweeter-shared";
+import {Status} from "tweeter-shared";
 import InfiniteScroll from "react-infinite-scroll-component";
 import StatusItem from "../statusItem/StatusItem";
 import useToastListener from "../toaster/ToastListenerHook";
