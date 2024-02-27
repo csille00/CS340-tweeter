@@ -2,11 +2,12 @@ import {AuthToken, User} from "tweeter-shared";
 import {NavigateFunction} from "react-router-dom";
 import {UserService} from "../model/UserService";
 import {Buffer} from "buffer";
+import {Presenter, View} from "./Presenter";
+import {UserItemView} from "./UserItemPresenter";
 
-export interface RegisterView {
+export interface RegisterView extends View {
     setAlias: (alias: string) => void;
     setPassword: (password: string) => void;
-    displayErrorMessage: (meesage: string) => void;
     updateUserInfo: (
         currentUser: User,
         displayedUser: User | null,
@@ -18,14 +19,17 @@ export interface RegisterView {
     setImageBytes: (bytes: Uint8Array) => void
 }
 
-export class RegisterPresenter {
+export class RegisterPresenter extends Presenter {
     private service: UserService
-    private view: RegisterView
-    private userImageBytes: Uint8Array
+    private userImageBytes: Uint8Array = new Uint8Array();
 
     public constructor(view: RegisterView) {
-        this.view = view;
+        super(view)
         this.service = new UserService()
+    }
+
+    protected get view(): RegisterView {
+        return super.view as RegisterView;
     }
 
     public handleImageFile (file: File | undefined) {

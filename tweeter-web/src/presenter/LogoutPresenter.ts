@@ -1,35 +1,31 @@
 import {NavigateFunction} from "react-router-dom";
 import {AuthToken} from "tweeter-shared";
+import {MessageView, Presenter} from "./Presenter";
+import {UserItemView} from "./UserItemPresenter";
 
-export interface LogoutView {
-    displayErrorMessage: (message: string) => void
-    displayInfoMessage: (message: string, duration: number) => void
-    clearLastInfoMessage: () => void
+export interface LogoutView extends MessageView {
     clearUserInfo: () => void;
     navigate: NavigateFunction
 }
 
-export class LogoutPresenter {
-    private view: LogoutView
+export class LogoutPresenter extends Presenter {
 
     public constructor(view: LogoutView) {
-        this.view = view
+        super(view);
+    }
+
+    protected get view(): LogoutView {
+        return super.view as LogoutView;
     }
 
     public async logOut  (authToken: AuthToken|null) {
         this.view.displayInfoMessage("Logging Out...", 0);
-
-        try {
+        await this.doFailureReportingOperation(async () => {
             await this.logout(authToken!);
-
             this.view.clearLastInfoMessage();
             this.view.clearUserInfo();
             this.view.navigate("/login");
-        } catch (error) {
-            this.view.displayErrorMessage(
-                `Failed to log user out because of exception: ${error}`
-            );
-        }
+        }, "log user out ")
     };
 
     private async logout (authToken: AuthToken): Promise<void> {
