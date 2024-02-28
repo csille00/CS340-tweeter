@@ -7,16 +7,12 @@ export interface NavigationView extends View{
     setDisplayedUser: (user: User) => void;
 }
 
-export class NavigationPresenter extends Presenter {
+export class NavigationPresenter extends Presenter<NavigationView> {
     private service: UserService
 
     public constructor(view: NavigationView) {
         super(view)
         this.service = new UserService()
-    }
-
-    protected get view(): NavigationView {
-        return super.view as NavigationView;
     }
 
     private extractAlias = (value: string) => value.substring(value.indexOf("@"));

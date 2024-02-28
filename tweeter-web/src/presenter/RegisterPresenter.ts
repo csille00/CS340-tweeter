@@ -38,24 +38,17 @@ export class RegisterPresenter extends AuthenticationPresenter {
         }
     };
 
-    public async doRegister (
-        firstName: string,
-        lastName: string,
-        alias: string,
-        password: string,
-        rememberMe: boolean)
-    {
-        await this.doFailureReportingOperation(async () => {
-            let [user, authToken] = await this.service.register(
-                firstName,
-                lastName,
-                alias,
-                password,
-                this.userImageBytes
-            );
-
-            this.view.updateUserInfo(user, user, authToken, rememberMe);
-            this.view.navigate("/");
-        }, "register user")
+    public async doRegister (firstName: string, lastName: string, alias: string, password: string, rememberMe: boolean){
+        await this.doAuthentication( async () => this.service.register(
+            firstName,
+            lastName,
+            alias,
+            password,
+            this.userImageBytes
+        ), rememberMe, undefined, "register user")
     };
+
+    protected doNavigation() {
+        this.view.navigate("/");
+    }
 }

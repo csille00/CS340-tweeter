@@ -1,7 +1,5 @@
 import {AuthToken, Status, User} from "tweeter-shared";
-import {StatusService} from "../model/StatusService";
-import {StatusItemPresenter, StatusItemView} from "./StatusItemPresenter";
-import {UserItemView} from "./UserItemPresenter";
+import {StatusItemPresenter} from "./StatusItemPresenter";
 import {PAGE_SIZE} from "./PagedItemPresenter";
 
 export class FeedPresenter extends StatusItemPresenter {

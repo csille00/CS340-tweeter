@@ -7,7 +7,7 @@ export interface PagedItemView<T> extends View {
     addItems: (items: T[]) => void;
 }
 
-export abstract class PagedItemPresenter<T, U> extends Presenter {
+export abstract class PagedItemPresenter<T, U> extends Presenter<PagedItemView<T>> {
     private _hasMoreItems = true;
     private _lastItem: T | null = null
     private _service: U;

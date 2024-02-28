@@ -8,20 +8,13 @@ export interface LogoutView extends MessageView {
     navigate: NavigateFunction
 }
 
-export class LogoutPresenter extends Presenter {
-
-    public constructor(view: LogoutView) {
-        super(view);
-    }
-
-    protected get view(): LogoutView {
-        return super.view as LogoutView;
-    }
-
+export class LogoutPresenter extends Presenter<LogoutView> {
     public async logOut  (authToken: AuthToken|null) {
         this.view.displayInfoMessage("Logging Out...", 0);
         await this.doFailureReportingOperation(async () => {
+
             await this.logout(authToken!);
+
             this.view.clearLastInfoMessage();
             this.view.clearUserInfo();
             this.view.navigate("/login");

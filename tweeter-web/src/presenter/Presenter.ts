@@ -11,15 +11,15 @@ export interface MessageView extends View {
     clearLastInfoMessage: () => void;
 }
 
-export class Presenter {
-    private _view: View;
+export class Presenter<T extends View> {
+    private readonly _view: View;
 
     public constructor(view: View) {
         this._view = view;
     }
 
-    protected get view(): View {
-        return this._view;
+    protected get view(): T {
+        return this._view as T;
     }
 
     protected async doFailureReportingOperation(operation: () => Promise<void>, operationDescription: string){
@@ -29,6 +29,4 @@ export class Presenter {
             this.view.displayErrorMessage(`Failed to ${operationDescription} because of exception: ${error}`)
         }
     }
-
-
 }

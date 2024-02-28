@@ -15,7 +15,7 @@ export interface AuthenticationView extends View {
     navigate: NavigateFunction
 }
 
-export class AuthenticationPresenter extends Presenter {
+export abstract class AuthenticationPresenter extends Presenter<AuthenticationView> {
     protected service: UserService
 
     public constructor(view: AuthenticationView) {
@@ -23,7 +23,14 @@ export class AuthenticationPresenter extends Presenter {
         this.service = new UserService();
     }
 
-    protected get view(): AuthenticationView {
-        return super.view as AuthenticationView;
+    protected async doAuthentication(authMethod: () => Promise<[User, AuthToken]>, rememberMe: boolean, originalUrl: string|undefined, authDescription: string){
+        await this.doFailureReportingOperation( async () => {
+            let [user, authToken] = await authMethod();
+            this.view.updateUserInfo(user, user, authToken, rememberMe);
+
+            this.doNavigation(originalUrl)
+        }, authDescription)
     }
+
+    protected abstract doNavigation(originalUrl: string | undefined): void;
 }

@@ -3,7 +3,6 @@ import {StatusItemPresenter} from "./StatusItemPresenter";
 import {PAGE_SIZE} from "./PagedItemPresenter";
 
 export class StoryPresenter extends StatusItemPresenter {
-
     protected getItemDescription(): string {
         return "load more story items";
     }

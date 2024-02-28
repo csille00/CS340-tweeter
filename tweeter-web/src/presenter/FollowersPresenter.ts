@@ -8,6 +8,6 @@ export class FollowersPresenter extends UserItemPresenter {
     }
 
     protected async getMoreItems(auth: AuthToken, user: User): Promise<[User[], boolean]> {
-        return await this.service.loadMoreFollowers(auth, user, PAGE_SIZE, this.lastItem)
+        return await this.service.loadMoreFollowers(auth, user, PAGE_SIZE, this.lastItem);
     }
 }
