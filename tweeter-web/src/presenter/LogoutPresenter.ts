@@ -1,7 +1,6 @@
 import {NavigateFunction} from "react-router-dom";
 import {AuthToken} from "tweeter-shared";
 import {MessageView, Presenter} from "./Presenter";
-import {UserItemView} from "./UserItemPresenter";
 
 export interface LogoutView extends MessageView {
     clearUserInfo: () => void;

@@ -14,13 +14,12 @@ import {User, Status} from "tweeter-shared";
 import ItemScroller from "./components/mainLayout/ItemScroller";
 import useUserInfoHook from "./components/userInfo/UserInfoHook";
 import {FollowingPresenter} from "./presenter/FollowingPresenter";
-import {UserItemView} from "./presenter/UserItemPresenter";
 import {FollowersPresenter} from "./presenter/FollowersPresenter";
-import {StatusItemView} from "./presenter/StatusItemPresenter";
 import {FeedPresenter} from "./presenter/FeedPresenter";
 import {StoryPresenter} from "./presenter/StoryPresenter";
 import StatusItem from "./components/statusItem/StatusItem";
 import UserItem from "./components/userItem/UserItem";
+import {PagedItemView} from "./presenter/PagedItemPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfoHook();
@@ -53,7 +52,7 @@ const AuthenticatedRoutes = () => {
                element={
                 <ItemScroller<Status>
                     key={1}
-                    presenterGenerator={(view: StatusItemView) => new FeedPresenter(view)}
+                    presenterGenerator={(view: PagedItemView<Status>) => new FeedPresenter(view)}
                     componentGenerator={(item: Status) => <StatusItem status={item}/>}
                 />
             }
@@ -62,7 +61,7 @@ const AuthenticatedRoutes = () => {
                element={
                 <ItemScroller<Status>
                     key={2}
-                    presenterGenerator={(view: StatusItemView) => new StoryPresenter(view)}
+                    presenterGenerator={(view: PagedItemView<Status>) => new StoryPresenter(view)}
                     componentGenerator={(item: Status) => <StatusItem status={item}/>}
                 />
             }
@@ -72,7 +71,7 @@ const AuthenticatedRoutes = () => {
           element={
               <ItemScroller<User>
                   key={3}
-                  presenterGenerator={(view: UserItemView) => new FollowingPresenter(view)}
+                  presenterGenerator={(view: PagedItemView<User>) => new FollowingPresenter(view)}
                   componentGenerator={(item: User) => <UserItem value={item}/>}
               />
           }
@@ -82,7 +81,7 @@ const AuthenticatedRoutes = () => {
           element={
               <ItemScroller<User>
                   key={4}
-                  presenterGenerator={(view: UserItemView) => new FollowersPresenter(view)}
+                  presenterGenerator={(view: PagedItemView<User>) => new FollowersPresenter(view)}
                   componentGenerator={(item: User) => <UserItem value={item}/>}
               />
           }
