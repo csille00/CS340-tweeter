@@ -1,39 +1,32 @@
-import {Status} from "tweeter-shared";
 import InfiniteScroll from "react-infinite-scroll-component";
-import StatusItem from "../statusItem/StatusItem";
 import useToastListener from "../toaster/ToastListenerHook";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import useUserInfoHook from "../userInfo/UserInfoHook";
-import {StatusItemPresenter, StatusItemView} from "../../presenter/StatusItemPresenter";
+import {PagedItemView} from "../../presenter/PagedItemPresenter";
+import {UserItemPresenter} from "../../presenter/UserItemPresenter";
+import {StatusItemPresenter} from "../../presenter/StatusItemPresenter";
 
-interface Props {
-    presenterGenerator: (view: StatusItemView) => StatusItemPresenter;
+interface Props<GenericItem> {
+    presenterGenerator: (view: PagedItemView<GenericItem>) => UserItemPresenter | StatusItemPresenter;
+    componentGenerator: (item: GenericItem) => React.JSX.Element
 }
 
-const UserItemScroller =(props: Props) => {
+function ItemScroller<GenericItem> (props: Props<GenericItem>) {
     const { displayErrorMessage } = useToastListener();
-    const [items, setItems] = useState<Status[]>([]);
-    const [hasMoreItems] = useState(true);
+    const [items, setItems] = useState<GenericItem[]>([]);
 
     // Required to allow the addItems method to see the current value of 'items'
     // instead of the value from when the closure was created.
     const itemsReference = useRef(items);
     itemsReference.current = items;
 
-    const addItems = (newItems: Status[]) =>
-        setItems([...itemsReference.current, ...newItems]);
-
-    const { displayedUser, authToken } =
-        useUserInfoHook();
+    const { displayedUser, authToken } = useUserInfoHook();
 
     // Load initial items
-    useEffect(() => {
-        loadMoreItems();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    useEffect(() => { loadMoreItems();}, []);
 
-    const listener: StatusItemView = {
-        addItems: addItems,
+    const listener: PagedItemView<GenericItem>= {
+        addItems: (newItems: GenericItem[]) => setItems([...itemsReference.current, ...newItems]),
         displayErrorMessage: displayErrorMessage
     }
 
@@ -47,15 +40,13 @@ const UserItemScroller =(props: Props) => {
                 className="pr-0 mr-0"
                 dataLength={items.length}
                 next={loadMoreItems}
-                hasMore={hasMoreItems}
-                loader={<h4>Loading...</h4>}
-            >
+                hasMore={presenter.hasMoreItems}
+                loader={<h4>Loading...</h4>}>
                 {items.map((item, index) => (
                     <div
                         key={index}
-                        className="row mb-3 mx-0 px-0 border rounded bg-white"
-                    >
-                        <StatusItem status={item}/>
+                        className="row mb-3 mx-0 px-0 border rounded bg-white">
+                        {props.componentGenerator(item)}
                     </div>
                 ))}
             </InfiniteScroll>
@@ -63,4 +54,4 @@ const UserItemScroller =(props: Props) => {
     );
 }
 
-export default UserItemScroller
+export default ItemScroller
