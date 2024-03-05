@@ -1,7 +1,6 @@
 import {AuthToken, User} from "tweeter-shared";
 import {UserService} from "../model/UserService";
 import {Presenter, View} from "./Presenter";
-import {UserItemView} from "./UserItemPresenter";
 
 export interface NavigationView extends View{
     setDisplayedUser: (user: User) => void;
