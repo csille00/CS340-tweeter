@@ -1,7 +1,8 @@
 import {AppNavbarPresenter, AppNavbarView} from "../../src/presenter/AppNavbarPresenter";
-import {instance, mock, spy, verify, when} from "ts-mockito";
+import {anything, capture, instance, mock, spy, verify, when} from "ts-mockito";
 import {AuthToken} from "tweeter-shared";
 import {UserService} from "../../src/model/UserService";
+import "@testing-library/jest-dom"
 
 describe("AppNavbarPresenter", () => {
     let mockAppNavbarView: AppNavbarView;
@@ -30,5 +31,25 @@ describe("AppNavbarPresenter", () => {
     it("calls logout on the user service with the correct auth token", async () => {
         await appNavbarPresenter.logout(authToken);
         verify(mockUserService.doLogout(authToken)).once();
+    })
+
+    it("tells the view to clear the last info message, clear the user info, and navigate to the login page when login is succesful", async () => {
+        await appNavbarPresenter.logout(authToken)
+        verify(mockAppNavbarView.clearLastInfoMessage()).once();
+        verify(mockAppNavbarView.clearUserInfo()).once();
+        verify(mockAppNavbarView.navigate("/login")).once();
+    })
+
+    it("displays error message and does not clear the user info, and navigate to the login page when logout fails", async () => {
+        const error = new Error("An error occurred")
+        when(mockUserService.doLogout(authToken)).thenThrow(error)
+        await appNavbarPresenter.logout(authToken)
+
+        verify(mockAppNavbarView.displayErrorMessage("Failed to log user out because of exception: An error occurred")).once()
+        verify(mockAppNavbarView.clearLastInfoMessage()).never();
+        verify(mockAppNavbarView.clearUserInfo()).never();
+        verify(mockAppNavbarView.navigate("/login")).never();
+
+
     })
 })

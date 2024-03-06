@@ -26,7 +26,6 @@ export class AppNavbarPresenter extends Presenter<AppNavbarView> {
             this.view.clearLastInfoMessage();
             this.view.clearUserInfo();
             this.view.navigate("/login");
-        }, "log user out ")
+        }, "log user out")
     };
-
 }

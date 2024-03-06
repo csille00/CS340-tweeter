@@ -12,6 +12,7 @@ import {AuthenticationView} from "../../../presenter/AuthenticationPresenter";
 
 interface Props {
   originalUrl?: string;
+  presenter?: LoginPresenter;
 }
 
 const Login = (props: Props) => {
@@ -31,7 +32,7 @@ const Login = (props: Props) => {
     navigate: navigate
   }
 
-  const [presenter] = useState(new LoginPresenter(listener))
+  const [presenter] = useState(props.presenter ?? new LoginPresenter(listener))
 
   const rememberMeRef = useRef(rememberMe);
   rememberMeRef.current = rememberMe;

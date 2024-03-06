@@ -7,34 +7,30 @@ export interface PostStatusView extends MessageView {
 }
 
 export class PostPresenter extends Presenter<PostStatusView> {
-    private service: StatusService;
+    private _statusService: StatusService;
 
     public constructor(view: PostStatusView) {
         super(view)
-        this.service = new StatusService()
+        this._statusService = new StatusService()
     }
 
-    public async postStatus (
-        authToken: AuthToken,
-        newStatus: Status
-    ): Promise<void> {
-        // Pause so we can see the logging out message. Remove when connected to the server
-        await new Promise((f) => setTimeout(f, 2000));
 
-        // TODO: Call the server to post the status
-    };
+    public get statusService() {
+        if (this._statusService == null) {
+            this._statusService = new StatusService();
+        }
+        return this._statusService;
+    }
 
     public async submitPost (auth: AuthToken|null, post: string, user: User|null) {
         await this.doFailureReportingOperation(async () => {
             this.view.displayInfoMessage("Posting status...", 0);
 
-            await this.postStatus(auth!, new Status(post, user!, Date.now()));
+            await this.statusService.postStatus(auth!, new Status(post, user!, Date.now()));
 
             this.view.clearLastInfoMessage();
             this.view.setPost("");
             this.view.displayInfoMessage("Status posted!", 2000);
         }, "post status")
     };
-
-
 }

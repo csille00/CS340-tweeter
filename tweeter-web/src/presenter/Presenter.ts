@@ -26,7 +26,7 @@ export class Presenter<T extends View> {
         try {
             await operation()
         } catch (error) {
-            this.view.displayErrorMessage(`Failed to ${operationDescription} because of exception: ${error}`)
+            this.view.displayErrorMessage(`Failed to ${operationDescription} because of exception: ${(error as Error).message}`)
         }
     }
 }
