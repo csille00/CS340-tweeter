@@ -1,11 +1,11 @@
-import Login from "../../../src/components/authentication/login/Login";
+import Login from "../../../../src/components/authentication/login/Login";
 import {render, screen} from "@testing-library/react";
 import {MemoryRouter} from "react-router-dom";
 import {userEvent} from "@testing-library/user-event/";
 import { library } from "@fortawesome/fontawesome-svg-core"
 import { fab } from "@fortawesome/free-brands-svg-icons"
 import "@testing-library/jest-dom"
-import {LoginPresenter} from "../../../src/presenter/LoginPresenter";
+import {LoginPresenter} from "../../../../src/presenter/LoginPresenter";
 import {anything, instance, mock, verify} from "ts-mockito";
 
 library.add(fab)

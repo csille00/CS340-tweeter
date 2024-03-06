@@ -34,20 +34,22 @@ const PostStatus = () => {
     return (
         <form>
           <div className="form-group mb-3">
-        <textarea
-            className="form-control"
-            id="postStatusTextArea"
-            rows={10}
-            placeholder="What's on your mind?"
-            value={post}
-            onChange={(event) => {
-              setPost(event.target.value);
-            }}
-        />
+            <textarea
+                className="form-control"
+                id="postStatusTextArea"
+                aria-label="post-text-box"
+                rows={10}
+                placeholder="What's on your mind?"
+                value={post}
+                onChange={(event) => {
+                  setPost(event.target.value);
+                }}
+            />
           </div>
           <div className="form-group">
             <button
                 id="postStatusButton"
+                aria-label="post-button"
                 className="btn btn-md btn-primary me-1"
                 type="button"
                 disabled={checkButtonStatus()}
@@ -57,6 +59,7 @@ const PostStatus = () => {
             </button>
             <button
                 id="clearStatusButton"
+                aria-label="clear-button"
                 className="btn btn-md btn-secondary"
                 type="button"
                 disabled={checkButtonStatus()}
