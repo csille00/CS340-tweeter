@@ -1,3 +1,4 @@
+
 export { Follow } from "./model/domain/Follow";
 export { PostSegment, Type } from "./model/domain/PostSegment";
 export { Status } from "./model/domain/Status";
@@ -8,6 +9,4 @@ export { AuthToken } from "./model/domain/AuthToken";
 // uploading to lambda. Instead we have to list each export.
 export { FakeData } from "./util/FakeData";
 
-export {LoginRequest} from "./model/net/Request";
-export {RegisterRequest} from "./model/net/Request";
-export {AuthenticateResponse} from "./model/net/Response";
+export {LoginRequest, RegisterRequest} from "./model/net/Request";

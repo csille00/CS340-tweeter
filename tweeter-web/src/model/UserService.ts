@@ -1,6 +1,8 @@
 import {AuthToken, FakeData, LoginRequest, RegisterRequest, User} from "tweeter-shared";
 import {Buffer} from "buffer";
 import {ServerFacade} from "./net/ServerFacade";
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
 
 export class UserService {
 
@@ -41,7 +43,13 @@ export class UserService {
 
     public async login(alias: string, password: string): Promise<[User, AuthToken]> {
         const response = await this.serverFacade.login(new LoginRequest(alias, password));
-        return [response.user, response.token]
+        const user = User.fromDto(response.user)
+        const token = AuthToken.fromDto(response.token)
+        if(user != null && token != null){
+            return [user, token]
+        } else {
+            throw new Error("User or token was null in client side service login call");
+        }
     };
 
     public async register (
@@ -55,10 +63,14 @@ export class UserService {
         let imageStringBase64: string =
             Buffer.from(userImageBytes).toString("base64");
 
-        const response = await this.serverFacade.register(
-            new RegisterRequest(alias, password, firstName, lastName, userImageBytes)
-        )
-        return [response.user, response.token];
+        const response = await this.serverFacade.login(new LoginRequest(alias, password));
+        const user = User.fromDto(response.user)
+        const token = AuthToken.fromDto(response.token)
+        if(user != null && token != null){
+            return [user, token]
+        } else {
+            throw new Error("User or token was null in client side service login call");
+        }
     };
 
     public async doLogout (authToken: AuthToken): Promise<void> {

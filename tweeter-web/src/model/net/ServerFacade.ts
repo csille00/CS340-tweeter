@@ -1,5 +1,6 @@
-import {AuthenticateResponse, LoginRequest, RegisterRequest} from "tweeter-shared";
-import { ClientCommunicator } from "./ClientCommunicator";
+import {LoginRequest, RegisterRequest} from "tweeter-shared";
+import {ClientCommunicator} from "./ClientCommunicator";
+import {AuthenticateResponse} from "tweeter-shared/dist/model/net/Response";
 
 export class ServerFacade {
 
@@ -9,15 +10,13 @@ export class ServerFacade {
 
     async login(request: LoginRequest): Promise<AuthenticateResponse> {
         const endpoint = "/service/login";
-        const response: JSON = await this.clientCommunicator.doPost<LoginRequest>(request, endpoint);
-
-        return AuthenticateResponse.fromJson(response);
+        return await this.clientCommunicator.doPost<LoginRequest, AuthenticateResponse>(request, endpoint);
     }
 
-    async register(request: RegisterRequest) {
-        const endpoint = "/service/login";
-        const response = await this.clientCommunicator.doPost<RegisterRequest>(request, endpoint);
-
-        return AuthenticateResponse.fromJson(response);
-    }
+    // async register(request: RegisterRequest) {
+    //     const endpoint = "/service/login";
+    //     const response: JSON = await this.clientCommunicator.doPost<RegisterRequest, AuthenticateResponse>(request, endpoint);
+    //
+    //     return AuthenticateResponse.fromJson(response);
+    // }
 }

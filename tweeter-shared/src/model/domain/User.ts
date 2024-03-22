@@ -1,3 +1,5 @@
+import {UserDto} from "../DTO/UserDto";
+
 export class User {
   private _firstName: string;
   private _lastName: string;
@@ -54,6 +56,22 @@ export class User {
 
   public equals(other: User): boolean {
     return this._alias === other._alias;
+  }
+
+  public static fromJsonString(json:string | null | undefined): User | null {
+    return json ? this.fromDto(JSON.parse(json)) : null
+  }
+  public static fromDto(dto: UserDto | null | undefined) : User | null {
+    return dto ? new User(dto.firstName,dto.lastName, dto.alias, dto.imageUrl) : null
+  }
+
+  public get dto(): UserDto {
+    return {
+      firstName: this.firstName,
+      lastName: this.lastName,
+      alias: this.alias,
+      imageUrl: this.imageUrl
+    }
   }
 
   public static fromJson(json: string | null | undefined): User | null {

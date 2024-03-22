@@ -1,4 +1,5 @@
 import {TweeterRequest} from "tweeter-shared/dist/model/net/Request";
+import {TweeterResponse} from "tweeter-shared/dist/model/net/Response";
 
 export class ClientCommunicator {
     private SERVER_URL: string;
@@ -6,7 +7,7 @@ export class ClientCommunicator {
         this.SERVER_URL = SERVER_URL;
     }
 
-    async doPost<T extends TweeterRequest>(req: T, endpoint: string): Promise<JSON> {
+    async doPost<REQ extends TweeterRequest, RES extends TweeterResponse>(req: REQ, endpoint: string): Promise<RES> {
         const url = this.SERVER_URL + endpoint;
         const request = {
             method: "post",
@@ -20,7 +21,8 @@ export class ClientCommunicator {
             console.log("calling ", url, "with", request);
             const resp: Response = await fetch(url, request);
             if (resp.ok) {
-                return await resp.json();
+                const response: RES = await resp.json();
+                return response;
             } else {
                 const error = await resp.json();
                 throw new Error(error.errorMessage);
