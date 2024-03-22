@@ -2,7 +2,7 @@ import {AuthenticationPresenter} from "./AuthenticationPresenter";
 
 export class LoginPresenter extends AuthenticationPresenter {
     public async doLogin(alias: string, password: string, rememberMe: boolean, originalUrl: string | undefined)  {
-        await this.doAuthentication( async () => this.service.login()
+        await this.doAuthentication( async () => this.service.login(alias, password)
             , rememberMe
             , originalUrl
             , "log user in");
