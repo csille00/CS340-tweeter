@@ -1,3 +1,7 @@
+export class TweeterRequest {
+
+}
+
 export class LoginRequest {
     username: string;
     password: string;
@@ -6,5 +10,5 @@ export class LoginRequest {
         this.username = username;
         this.password = password;
     }
-
 }
+
