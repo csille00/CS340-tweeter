@@ -37,9 +37,9 @@ export abstract class PagedItemPresenter<T, U> extends Presenter<PagedItemView<T
         this._lastItem = user;
     }
 
-    protected get view(): PagedItemView<T> {
-        return super.view as PagedItemView<T>
-    }
+    // protected get view(): PagedItemView<T> {
+    //     return super.view as PagedItemView<T>
+    // }
 
     public async loadMoreItems (auth : AuthToken | null, user: User | null) {
         await this.doFailureReportingOperation(async () => {
