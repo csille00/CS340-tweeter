@@ -1,0 +1,11 @@
+BUCKET=lambdas-csille00
+EDIT_LAMBDALIST='
+login
+logout
+register
+getFollowerCount
+getFolloweeCount
+getFollowerStatus
+getUser
+'
+LAMBDALAYER_ARN=arn:aws:lambda:us-west-2:096981444592:layer:lambdaDependencies:1

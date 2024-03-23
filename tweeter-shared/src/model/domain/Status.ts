@@ -173,7 +173,7 @@ export class Status {
     for (let word of post.split(/(\s+)/)) {
       if (word.startsWith("@")) {
         // Remove all non-alphanumeric characters
-        word.replaceAll(/[^a-zA-Z0-9]/g, "");
+        // word.replaceAll(/[^a-zA-Z0-9]/g, "");
 
         mentions.push(word);
       }

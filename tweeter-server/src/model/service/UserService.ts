@@ -1,6 +1,4 @@
-import {Buffer} from "buffer";
-import {AuthToken, User} from "tweeter-shared/src";
-import {FakeData} from "tweeter-shared/dist/tweeter-server/src/util/FakeData";
+import {AuthToken, FakeData, User} from "tweeter-shared";
 
 export class UserService {
     public async login(alias: string, password: string): Promise<[User, AuthToken]> {

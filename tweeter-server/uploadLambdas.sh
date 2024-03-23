@@ -3,9 +3,9 @@
 # use set -e to terminate the script on error
 set -e
 
-source .server
+source /home/csille00/school/cs340/tweeter-web-starter/tweeter-server/.server
 
-aws s3 cp dist.zip s3://$BUCKET/code/lambdalist.zip
+aws s3 cp /home/csille00/school/cs340/tweeter-web-starter/tweeter-server/dist.zip s3://$BUCKET/code/lambdalist.zip
 
 # using -e let's us use escape characters such as \n if the output is in quotation marks
 echo -e '\n\n\nlambdalist.zip uploaded to the bucket. Updating lambda functions...\n'

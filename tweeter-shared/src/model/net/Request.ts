@@ -1,3 +1,6 @@
+import {AuthToken} from "../domain/AuthToken";
+import {User} from "../domain/User";
+
 export class TweeterRequest {
 
 }
@@ -24,6 +27,52 @@ export class RegisterRequest {
         this.firstName = firstName;
         this.lastName = lastname;
         this.uintArray = uintArray;
+    }
+}
+
+export class LogoutRequest {
+    token: AuthToken
+
+    constructor(token: AuthToken) {
+        this.token = token;
+    }
+}
+
+export class UserRequest {
+    user: User;
+    token: AuthToken;
+
+    constructor(user: User, token: AuthToken) {
+        this.user = user;
+        this.token = token;
+    }
+}
+
+export class GetUserRequest {
+    authToken: AuthToken;
+    alias: string
+
+
+    constructor(authToken: AuthToken, alias: string) {
+        this.authToken = authToken;
+        this.alias = alias;
+    }
+}
+
+export class FollowerStatusRequest extends UserRequest {
+    private _selectedUser: User
+
+    constructor(user: User, token: AuthToken, selectedUser: User) {
+        super(user, token);
+        this._selectedUser = selectedUser;
+    }
+
+    get selectedUser(): User {
+        return this._selectedUser;
+    }
+
+    set selectedUser(value: User) {
+        this._selectedUser = value;
     }
 }
 
