@@ -60,19 +60,19 @@ export class GetUserRequest {
 }
 
 export class FollowerStatusRequest extends UserRequest {
-    private _selectedUser: User
+    private selectedUser: User
 
     constructor(user: User, token: AuthToken, selectedUser: User) {
         super(user, token);
-        this._selectedUser = selectedUser;
+        this.selectedUser = selectedUser;
     }
 
     get selectedUser(): User {
-        return this._selectedUser;
+        return this.selectedUser;
     }
 
     set selectedUser(value: User) {
-        this._selectedUser = value;
+        this.selectedUser = value;
     }
 }
 
