@@ -49,12 +49,13 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
         await new Promise((f) => setTimeout(f, 2000));
 
         // Server call placeholder, differentiate based on isFollowOperation if needed
-        // if (isFollowOperation) { ... } else { ... }
-
-        let followersCount = await this.service.getFollowersCount(authToken, user);
-        let followeesCount = await this.service.getFolloweesCount(authToken, user);
-
-        return [followersCount, followeesCount];
+        let response: [number, number]
+        if (isFollowOperation) {
+            response = await this.service.follow(authToken, user)
+        } else {
+            response = await this.service.unfollow(authToken, user)
+        }
+        return [response[1], response[2]];
     }
 
     public async follow(authToken: AuthToken, userToFollow: User) {

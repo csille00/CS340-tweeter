@@ -1,6 +1,6 @@
-import {AuthenticateResponse, LoginRequest, LogoutRequest, RegisterRequest} from "tweeter-shared";
+import {AuthenticateResponse, LoginRequest, LogoutRequest, RegisterRequest, UserRequest} from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
-import {TweeterResponse} from "tweeter-shared/dist/model/net/Response";
+import {FollowResponse, TweeterResponse} from "tweeter-shared/dist/model/net/Response";
 
 export class ServerFacade {
 
@@ -9,7 +9,7 @@ export class ServerFacade {
     private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
     async login(request: LoginRequest): Promise<AuthenticateResponse> {
-        const endpoint = "/login";
+        const endpoint = "/user/login";
         const response: JSON = await this.clientCommunicator.doPost<LoginRequest>(request, endpoint);
 
         console.log(response)
@@ -18,7 +18,7 @@ export class ServerFacade {
     }
 
     async register(request: RegisterRequest) {
-        const endpoint = "/register";
+        const endpoint = "/user/register";
         const response = await this.clientCommunicator.doPost<RegisterRequest>(request, endpoint);
 
         console.log(response)
@@ -27,11 +27,25 @@ export class ServerFacade {
     }
 
     async logout(request: LogoutRequest) {
-        const endpoint = "/logout";
+        const endpoint = "/user/logout";
         const response = await this.clientCommunicator.doPost<LogoutRequest>(request, endpoint);
 
         console.log(response)
+    }
 
-        return TweeterResponse.fromJson(response);
+    async follow(request: UserRequest) {
+        const endpoint = "/user/follow";
+        const response = await this.clientCommunicator.doPost<UserRequest>(request, endpoint);
+
+        console.log(response)
+        return FollowResponse.fromJson(response);
+    }
+
+    async unfollow(request: UserRequest) {
+        const endpoint = "/user/unfollow";
+        const response = await this.clientCommunicator.doPost<UserRequest>(request, endpoint);
+
+        console.log(response)
+        return FollowResponse.fromJson(response);
     }
 }
