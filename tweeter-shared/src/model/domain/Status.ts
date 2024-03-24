@@ -4,13 +4,13 @@ import moment from "moment";
 
 export class Status {
   private _post: string;
-  private _user: User;
+  public user: User;
   private _timestamp: number;
   private _segments: PostSegment[];
 
   public constructor(post: string, user: User, timestamp: number) {
     this._post = post;
-    this._user = user;
+    this.user = user;
     this._timestamp = timestamp;
     this._segments = this.getPostSegments(post);
   }
@@ -206,14 +206,6 @@ export class Status {
     this._post = value;
   }
 
-  public get user(): User {
-    return this._user;
-  }
-
-  public set user(value: User) {
-    this._user = value;
-  }
-
   public get timestamp(): number {
     return this._timestamp;
   }
@@ -237,7 +229,7 @@ export class Status {
 
   public equals(other: Status): boolean {
     return (
-      this._user.equals(other.user) &&
+      this.user.equals(other.user) &&
       this._timestamp === other._timestamp &&
       this._post === other.post
     );

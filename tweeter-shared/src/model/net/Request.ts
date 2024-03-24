@@ -1,5 +1,6 @@
 import {AuthToken} from "../domain/AuthToken";
 import {User} from "../domain/User";
+import {Status} from "../domain/Status";
 
 export class TweeterRequest {
 
@@ -60,19 +61,50 @@ export class GetUserRequest {
 }
 
 export class FollowerStatusRequest extends UserRequest {
-    private selectedUser: User
+    selectedUser: User
 
     constructor(user: User, token: AuthToken, selectedUser: User) {
         super(user, token);
         this.selectedUser = selectedUser;
     }
+}
 
-    get selectedUser(): User {
-        return this.selectedUser;
-    }
+export class StatusItemsRequest {
+    token: AuthToken;
+    user: User;
+    pageSize: number;
+    lastItem: Status | null
 
-    set selectedUser(value: User) {
-        this.selectedUser = value;
+
+    constructor(token: AuthToken, user: User, pageSize: number, lastItem: Status | null) {
+        this.token = token;
+        this.user = user;
+        this.pageSize = pageSize;
+        this.lastItem = lastItem;
     }
 }
 
+export class UserItemsRequest {
+    token: AuthToken;
+    user: User;
+    pageSize: number;
+    lastItem: User | null
+
+
+    constructor(token: AuthToken, user: User, pageSize: number, lastItem: User | null) {
+        this.token = token;
+        this.user = user;
+        this.pageSize = pageSize;
+        this.lastItem = lastItem;
+    }
+}
+
+export class PostStatusRequest {
+    token: AuthToken;
+    status: Status;
+
+    constructor(token: AuthToken, status: Status) {
+        this.token = token;
+        this.status = status;
+    }
+}

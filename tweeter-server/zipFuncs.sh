@@ -4,6 +4,9 @@ echo removing /home/csille00/school/cs340/tweeter-web-starter/tweeter-server/dis
 rm -rf dist
 echo removing node_modules
 rm -rf /home/csille00/school/cs340/tweeter-web-starter/tweeter-server/node_modules
+cd ../tweeter-shared
+npm run build
+cd ../tweeter-server
 npm i
 rm -rf /home/csille00/school/cs340/tweeter-web-starter/tweeter-server/nodejs
 rm /home/csille00/school/cs340/tweeter-web-starter/tweeter-server/dist.zip
@@ -15,5 +18,5 @@ tsc
 zip -r dist.zip dist 1>/dev/null
 zip -r nodejs.zip nodejs 1>/dev/null
 
-./updateLayers.sh
-./uploadLambdas.sh
+#./updateLayers.sh
+#./uploadLambdas.sh
