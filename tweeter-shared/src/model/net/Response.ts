@@ -1,7 +1,6 @@
 import { AuthToken } from "../domain/AuthToken";
 import { User } from "../domain/User";
 import {Status} from "../domain/Status";
-import {LoadMoreStatusResponse} from "./garettResponse";
 
 export class TweeterResponse {
     private _success: boolean;
@@ -255,7 +254,7 @@ export class LoadStatusResponse extends TweeterResponse {
                 JSON.stringify(jsonObject._statusItems)
             )
         }
-        return new LoadMoreStatusResponse(
+        return new LoadStatusResponse(
             jsonObject._success,
             deserializedStatuses.map((status) => status!).filter((status) => status !== null) as Status[],
             jsonObject._hasMoreItems,
