@@ -45,9 +45,6 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
     };
 
     private async updateFollowState(isFollowOperation: boolean, authToken: AuthToken, user: User) {
-        // Pause for demonstration purposes
-        await new Promise((f) => setTimeout(f, 2000));
-
         // Server call placeholder, differentiate based on isFollowOperation if needed
         let response: [number, number]
         if (isFollowOperation) {

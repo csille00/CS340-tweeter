@@ -35,7 +35,6 @@ export class UserService {
 
     public async doLogout (authToken: AuthToken): Promise<void> {
         // Pause so we can see the logging out message. Delete when the call to the server is implemented.
-        await new Promise((res) => setTimeout(res, 1000));
     };
 
     public async getIsFollowerStatus (
@@ -50,7 +49,7 @@ export class UserService {
     public async getFolloweesCount (
         authToken: AuthToken,
         user: User
-    ): Promise<number> {
+    ){
         // TODO: Replace with the result of calling server
         return FakeData.instance.getFolloweesCount(user);
     };
@@ -58,7 +57,7 @@ export class UserService {
     public  async getFollowersCount (
         authToken: AuthToken,
         user: User
-    ): Promise<number> {
+    ) {
         // TODO: Replace with the result of calling server
         return FakeData.instance.getFollowersCount(user);
     };
@@ -75,11 +74,6 @@ export class UserService {
         authToken: AuthToken,
         userToUnfollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
-        // Pause so we can see the unfollowing message. Remove when connected to the server
-        await new Promise((f) => setTimeout(f, 2000));
-
-        // TODO: Call the server
-
         let followersCount = await this.getFollowersCount(authToken, userToUnfollow);
         let followeesCount = await this.getFolloweesCount(authToken, userToUnfollow);
 
@@ -90,11 +84,6 @@ export class UserService {
         authToken: AuthToken,
         userToFollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
-        // Pause so we can see the following message. Remove when connected to the server
-        await new Promise((f) => setTimeout(f, 2000));
-
-        // TODO: Call the server
-
         let followersCount = await this.getFollowersCount(authToken, userToFollow);
         let followeesCount = await this.getFolloweesCount(authToken, userToFollow);
 
