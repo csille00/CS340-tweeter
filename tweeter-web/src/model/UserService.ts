@@ -1,6 +1,16 @@
-import {AuthToken, FakeData, LoginRequest, LogoutRequest, RegisterRequest, User, UserRequest} from "tweeter-shared";
+import {
+    AuthToken,
+    FakeData, FollowerStatusRequest,
+    GetUserRequest,
+    LoginRequest,
+    LogoutRequest,
+    RegisterRequest,
+    User,
+    UserRequest
+} from "tweeter-shared";
 import {Buffer} from "buffer";
 import {ServerFacade} from "./net/ServerFacade";
+import {FollowCountResponse, FollowerStatusResponse, GetUserResponse} from "tweeter-shared/dist/model/net/Response";
 
 export class UserService {
 
@@ -11,32 +21,32 @@ export class UserService {
         user: User,
         selectedUser: User
     ): Promise<boolean> {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.isFollower();
+        const response: FollowerStatusResponse = await this.serverFacade.getFollowerStatus(new FollowerStatusRequest(user, authToken, selectedUser))
+        return response.status
     };
 
     public async getFolloweesCount (
         authToken: AuthToken,
         user: User
     ): Promise<number> {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getFolloweesCount(user);
+        const response: FollowCountResponse = await this.serverFacade.getFolloweeCount(new UserRequest(user, authToken))
+        return response.count
     };
 
     public  async getFollowersCount (
         authToken: AuthToken,
         user: User
     ): Promise<number> {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getFollowersCount(user);
+        const response: FollowCountResponse = await this.serverFacade.getFollowerCount(new UserRequest(user, authToken))
+        return response.count
     };
 
     public async getUser (
         authToken: AuthToken,
         alias: string
     ): Promise<User | null> {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.findUserByAlias(alias);
+        const response: GetUserResponse = await this.serverFacade.getUser(new GetUserRequest(authToken, alias))
+        return response.user
     };
 
     public async login(alias: string, password: string): Promise<[User, AuthToken]> {

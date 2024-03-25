@@ -4,7 +4,8 @@ import {FollowService} from "../model/service/FollowService";
 
 export const handler = async (event: UserItemsRequest) => {
     try {
-        return new LoadUserItemsResponse(true, ...await new FollowService().loadMoreFollowers(event.token, event.user, event.pageSize, event.lastItem))
+        const resp = await new FollowService().loadMoreFollowers(event.token, event.user, event.pageSize, event.lastItem)
+        return new LoadUserItemsResponse(true, resp[0], resp[1], "Load more followers returned successfully")
     } catch  (error) {
         // Create a more detailed error message. Consider the security implications.
         const errorMessage = `Error loading followers for ${event.user.alias}. Details: ${error instanceof Error ? error.message : 'Unknown error'}`;
