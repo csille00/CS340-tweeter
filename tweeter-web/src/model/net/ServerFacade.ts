@@ -1,6 +1,20 @@
-import {AuthenticateResponse, LoginRequest, LogoutRequest, RegisterRequest, UserRequest} from "tweeter-shared";
+import {
+    AuthenticateResponse, FollowerStatusRequest,
+    GetUserRequest,
+    LoginRequest,
+    LogoutRequest,
+    RegisterRequest,
+    UserRequest
+} from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
-import {FollowResponse, TweeterResponse} from "tweeter-shared/dist/model/net/Response";
+import {
+    FollowCountResponse, FollowerStatusResponse,
+    FollowResponse,
+    GetUserResponse, LoadStatusResponse,
+    TweeterResponse
+} from "tweeter-shared/dist/model/net/Response";
+import {StatusItemsRequest} from "tweeter-shared/dist/model/net/Request";
+import {LoadMoreStatusResponse} from "tweeter-shared/dist/model/net/garettResponse";
 
 export class ServerFacade {
 
@@ -47,5 +61,45 @@ export class ServerFacade {
 
         console.log(response)
         return FollowResponse.fromJson(response);
+    }
+
+    async getUser(request: GetUserRequest){
+        const endpoint = "/user/getUser"
+        const response = await this.clientCommunicator.doPost<GetUserRequest>(request, endpoint);
+
+        console.log(response)
+        return GetUserResponse.fromJson(response);
+    }
+
+    async getFollowerCount(request: UserRequest){
+        const endpoint = "/user/getFollowerCount"
+        const response = await this.clientCommunicator.doPost<UserRequest>(request, endpoint);
+
+        console.log(response)
+        return FollowCountResponse.fromJson(response);
+    }
+
+    async getFolloweeCount(request: UserRequest){
+        const endpoint = "/user/getFolloweeCount"
+        const response = await this.clientCommunicator.doPost<UserRequest>(request, endpoint);
+
+        console.log(response)
+        return FollowCountResponse.fromJson(response);
+    }
+
+    async getFollowerStatus(request: FollowerStatusRequest){
+        const endpoint = "/user/getIsFollowerStatus"
+        const response = await this.clientCommunicator.doPost<FollowerStatusRequest>(request, endpoint);
+
+        console.log(response)
+        return FollowerStatusResponse.fromJson(response);
+    }
+
+    async loadMoreStoryItems(request: StatusItemsRequest){
+        const endpoint = "/status/loadMoreStoryItems"
+        const response = await this.clientCommunicator.doPost<StatusItemsRequest>(request, endpoint);
+
+        console.log(response)
+        return LoadStatusResponse.fromJson(response);
     }
 }
