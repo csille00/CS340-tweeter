@@ -1,14 +1,18 @@
 import {LoadStatusResponse, TweeterResponse} from "tweeter-shared/dist/model/net/Response";
 import {StatusService} from "../model/service/StatusService";
 import {StatusItemsRequest} from "tweeter-shared/dist/model/net/Request";
+import {Status} from "tweeter-shared";
 
 export const handler = async (event: StatusItemsRequest) => {
-    try {
-        const resp = await new StatusService().loadMoreFeedItems(event.token, event.user, event.pageSize, event.lastItem)
-        return new LoadStatusResponse(true, resp[0], resp[1], "LoadFeed Returned Succesfully")
-    } catch  (error) {
-        // Create a more detailed error message. Consider the security implications.
-        const errorMessage = `Error following user ${event.user.alias}. Details: ${error instanceof Error ? error.message : 'Unknown error'}`;
-        return new TweeterResponse(false, errorMessage);
+    let deserializedLastItem = null
+    if(event.lastItem !== null){
+        deserializedLastItem = Status.fromJson(JSON.stringify(event.lastItem))
     }
+    const resp = await new StatusService().loadMoreFeedItems(event.token, event.user, event.pageSize, deserializedLastItem)
+
+    if(!resp){
+        throw new Error("[Not Found] feedItems not found");
+    }
+
+    return new LoadStatusResponse(true, resp[0], resp[1], "LoadFeed Returned Succesfully")
 }

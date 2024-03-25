@@ -14,11 +14,9 @@ const container = document.getElementById("root")!;
 const root = createRoot(container);
 
 root.render(
-  <React.StrictMode>
     <UserInfoProvider>
       <ToastProvider>
         <App />
       </ToastProvider>
     </UserInfoProvider>
-  </React.StrictMode>
 );

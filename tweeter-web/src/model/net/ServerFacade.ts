@@ -10,11 +10,10 @@ import { ClientCommunicator } from "./ClientCommunicator";
 import {
     FollowCountResponse, FollowerStatusResponse,
     FollowResponse,
-    GetUserResponse, LoadStatusResponse,
+    GetUserResponse, LoadStatusResponse, LoadUserItemsResponse,
     TweeterResponse
 } from "tweeter-shared/dist/model/net/Response";
-import {StatusItemsRequest} from "tweeter-shared/dist/model/net/Request";
-import {LoadMoreStatusResponse} from "tweeter-shared/dist/model/net/garettResponse";
+import {PostStatusRequest, StatusItemsRequest, UserItemsRequest} from "tweeter-shared/dist/model/net/Request";
 
 export class ServerFacade {
 
@@ -101,5 +100,36 @@ export class ServerFacade {
 
         console.log(response)
         return LoadStatusResponse.fromJson(response);
+    }
+
+    async loadMoreFeedItems(request: StatusItemsRequest){
+        const endpoint = "/status/loadMoreFeedItems"
+        const response = await this.clientCommunicator.doPost<StatusItemsRequest>(request, endpoint);
+
+        console.log(response)
+        return LoadStatusResponse.fromJson(response);
+    }
+
+    async postStatus(request: PostStatusRequest){
+        const endpoint = "/status/postStatus"
+        const response = await this.clientCommunicator.doPost<PostStatusRequest>(request, endpoint);
+
+        console.log(response)
+    }
+
+    async loadMoreFollowers(request: UserItemsRequest){
+        const endpoint = "/follow/loadMoreFollowers"
+        const response = await this.clientCommunicator.doPost<UserItemsRequest>(request, endpoint);
+
+        console.log(response)
+        return LoadUserItemsResponse.fromJson(response);
+    }
+
+    async loadMoreFollowees(request: UserItemsRequest){
+        const endpoint = "/follow/loadMoreFollowees"
+        const response = await this.clientCommunicator.doPost<UserItemsRequest>(request, endpoint);
+
+        console.log(response)
+        return LoadUserItemsResponse.fromJson(response);
     }
 }

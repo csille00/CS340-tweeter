@@ -52,7 +52,7 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
         } else {
             response = await this.service.unfollow(authToken, user)
         }
-        return [response[1], response[2]];
+        return [response[0], response[1]];
     }
 
     public async follow(authToken: AuthToken, userToFollow: User) {

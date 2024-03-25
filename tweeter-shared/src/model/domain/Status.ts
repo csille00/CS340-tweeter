@@ -239,11 +239,11 @@ export class Status {
     if (!!json) {
       let jsonObject: {
         _post: string;
-        _user: {
-          _firstName: string;
-          _lastName: string;
+        user: {
           _alias: string;
+          _firstName: string;
           _imageUrl: string;
+          _lastName: string;
         };
         _timestamp: number;
         _segments: PostSegment[];
@@ -251,10 +251,10 @@ export class Status {
       return new Status(
         jsonObject._post,
         new User(
-          jsonObject._user._firstName,
-          jsonObject._user._lastName,
-          jsonObject._user._alias,
-          jsonObject._user._imageUrl
+          jsonObject.user._firstName,
+          jsonObject.user._lastName,
+          jsonObject.user._alias,
+          jsonObject.user._imageUrl
         ),
         jsonObject._timestamp
       );

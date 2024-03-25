@@ -6,12 +6,9 @@ import {
 } from "tweeter-shared/dist/model/net/Response";
 
 export const handler = async(event: FollowerStatusRequest)=> {
-    try {
-        const resp = await new UserService().getIsFollowerStatus(event.token, event.user, event.selectedUser)
-        return new FollowerStatusResponse(true, "GetIsFollowerStatus Suceesfully returned", resp);
-    } catch (error) {
-        // Create a more detailed error message. Consider the security implications.
-        const errorMessage = `Error fetching follower status for user ${event.user}. Details: ${error instanceof Error ? error.message : 'Unknown error'}`;
-        return new TweeterResponse(false, errorMessage);
+    const resp = await new UserService().getIsFollowerStatus(event.token, event.user, event.selectedUser)
+    if(!resp){
+        throw new Error("[Not Found] Follow status not found");
     }
+    return new FollowerStatusResponse(true, "GetIsFollowerStatus Suceesfully returned", resp);
 }

@@ -6,7 +6,7 @@ export class UserService {
         let user = FakeData.instance.firstUser;
 
         if (user === null) {
-            throw new Error("Invalid alias or password");
+            throw new Error("[Bad Request] invalid username or password");
         }
 
         return [user, FakeData.instance.authToken];
@@ -27,7 +27,7 @@ export class UserService {
         let user = FakeData.instance.firstUser;
 
         if (user === null) {
-            throw new Error("Invalid registration");
+            throw new Error("[Bad Request] user was null when logging in");
         }
 
         return [user, FakeData.instance.authToken];
@@ -43,6 +43,15 @@ export class UserService {
         selectedUser: User
     ): Promise<boolean> {
         // TODO: Replace with the result of calling server
+
+        if (user === null) {
+            throw new Error("[Bad Request] user not found");
+        }
+
+        if(authToken === null){ //change this to a real authToken check
+            throw new Error("[AuthError] invalid token")
+        }
+
         return FakeData.instance.isFollower();
     };
 
@@ -50,6 +59,15 @@ export class UserService {
         authToken: AuthToken,
         user: User
     ){
+
+        if (user === null) {
+            throw new Error("[Bad Request] user not found");
+        }
+
+        if(authToken === null){ //change this to a real authToken check
+            throw new Error("[AuthError] invalid token")
+        }
+
         // TODO: Replace with the result of calling server
         return FakeData.instance.getFolloweesCount(user);
     };
@@ -58,6 +76,15 @@ export class UserService {
         authToken: AuthToken,
         user: User
     ) {
+
+        if (user === null) {
+            throw new Error("[Bad Request] user not found");
+        }
+
+        if(authToken === null){ //change this to a real authToken check
+            throw new Error("[AuthError] invalid token")
+        }
+
         // TODO: Replace with the result of calling server
         return FakeData.instance.getFollowersCount(user);
     };
@@ -66,6 +93,15 @@ export class UserService {
         authToken: AuthToken,
         alias: string
     ): Promise<User | null> {
+
+        if(alias === null){
+            throw new Error("[Bad Request] invalid alias")
+        }
+
+        if(authToken === null){ //change this to a real authToken check
+            throw new Error("[AuthError] invalid token")
+        }
+
         // TODO: Replace with the result of calling server
         return FakeData.instance.findUserByAlias(alias);
     };
@@ -74,8 +110,20 @@ export class UserService {
         authToken: AuthToken,
         userToUnfollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
+        if (userToUnfollow === null) {
+            throw new Error("[Bad Request] user not found");
+        }
+
+        if(authToken === null){ //change this to a real authToken check
+            throw new Error("[AuthError] invalid token")
+        }
+
         let followersCount = await this.getFollowersCount(authToken, userToUnfollow);
         let followeesCount = await this.getFolloweesCount(authToken, userToUnfollow);
+
+        if(followersCount === null || followeesCount === null){
+            throw new Error("[Bad Request] follower/followee count was null in the database")
+        }
 
         return [followersCount, followeesCount];
     };
@@ -84,8 +132,21 @@ export class UserService {
         authToken: AuthToken,
         userToFollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
+
+        if (userToFollow === null) {
+            throw new Error("[Bad Request] user not found");
+        }
+
+        if(authToken === null){ //change this to a real authToken check
+            throw new Error("[AuthError] invalid token")
+        }
+
         let followersCount = await this.getFollowersCount(authToken, userToFollow);
         let followeesCount = await this.getFolloweesCount(authToken, userToFollow);
+
+        if(followersCount === null || followeesCount === null){
+            throw new Error("[Bad Request] follower/followee count was null in the database")
+        }
 
         return [followersCount, followeesCount];
     };

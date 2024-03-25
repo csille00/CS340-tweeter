@@ -15,5 +15,5 @@ LoadMoreFollowersLambda
 LoadMoreFolloweesLambda
 PostStatusLambda
 '
-LAMBDALAYER_ARN=arn:aws:lambda:us-west-2:096981444592:layer:lambdaDependencies:7
+LAMBDALAYER_ARN=arn:aws:lambda:us-west-2:096981444592:layer:lambdaDependencies:10
 
