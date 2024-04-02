@@ -12,9 +12,7 @@ export class StatusService {
         pageSize: number,
         lastItem: Status | null
     ): Promise<[Status[], boolean]> {
-        console.log("in load story items")
         const response = await this.serverFacade.loadMoreStoryItems(new StatusItemsRequest(authToken, user, pageSize, lastItem))
-        console.log("%%%%",response)
         return [response.statusItems, response.hasMoreItems]
     };
 
