@@ -6,7 +6,7 @@ import {
     GetCommand,
     PutCommand,
 } from "@aws-sdk/lib-dynamodb";
-import {DynamoDBClient, DynamoDBServiceException} from "@aws-sdk/client-dynamodb";
+import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 
 export class DynamoAuthTokenDAO implements AuthTokenDAO{
     private authTokenKey = "authToken"
@@ -20,11 +20,7 @@ export class DynamoAuthTokenDAO implements AuthTokenDAO{
             TableName: this.tableName,
             Key: this.generateAuthTokenObject(authToken),
         };
-        try{
-            await this.client.send(new DeleteCommand(params));
-        } catch (e: DynamoDBServiceException) {
-            console.log("Error deleting authToken from database", e.message)
-        }
+        await this.client.send(new DeleteCommand(params));
     }
 
     async getAuthToken(authToken: string): Promise<AuthToken | undefined> {
@@ -32,17 +28,13 @@ export class DynamoAuthTokenDAO implements AuthTokenDAO{
             TableName: this.tableName,
             Key: this.generateAuthTokenObject(authToken),
         };
-        try{
-            const output = await this.client.send(new GetCommand(params));
-            return output.Item == undefined
-                ? undefined
-                : new AuthToken(
-                    output.Item[this.authTokenKey],
-                    output.Item[this.ttlKey],
-                );
-        } catch(e: DynamoDBServiceException) {
-            console.log("Error getting authToken from database", e.message)
-        }
+        const output = await this.client.send(new GetCommand(params));
+        return output.Item == undefined
+            ? undefined
+            : new AuthToken(
+                output.Item[this.authTokenKey],
+                output.Item[this.ttlKey],
+            );
 
     }
 
@@ -54,11 +46,8 @@ export class DynamoAuthTokenDAO implements AuthTokenDAO{
                 [this.ttlKey]: authToken.timestamp,
             },
         };
-        try {
-            await this.client.send(new PutCommand(params));
-        } catch (e: DynamoDBServiceException) {
-            console.log("Error inserting authToken in the database", e.message)
-        }
+        await this.client.send(new PutCommand(params));
+
     }
 
     async updateAuthToken(authToken: AuthToken): Promise<void> {
