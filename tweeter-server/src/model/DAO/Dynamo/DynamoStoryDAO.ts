@@ -7,7 +7,7 @@ import {
     QueryCommand,
     QueryCommandOutput
 } from "@aws-sdk/lib-dynamodb";
-import {DynamoDBClient, DynamoDBServiceException} from "@aws-sdk/client-dynamodb";
+import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 
 export class DynamoStoryDAO implements StoryDAO {
     private aliasAttribute = "alias"
@@ -21,12 +21,7 @@ export class DynamoStoryDAO implements StoryDAO {
             TableName: this.tableName,
             Key: this.generatePostKey(story, user),
         };
-        try{
-            await this.client.send(new DeleteCommand(params));
-        } catch (e: DynamoDBServiceException) {
-            console.log("Error deleting post from database", e.message)
-            throw e;
-        }
+        await this.client.send(new DeleteCommand(params));
     }
 
     async getUserStoryPage(user: User, lastStatus: Status | null, limit: number): Promise<DataPage<Status>> {
@@ -47,20 +42,15 @@ export class DynamoStoryDAO implements StoryDAO {
         };
 
         const items: Status[] = [];
-        try {
-            const data: QueryCommandOutput = await this.client.send(new QueryCommand(params));
-            const hasMorePages = data.LastEvaluatedKey !== undefined;
-            data.Items?.forEach((item) => {
-                const newStatus = Status.fromJson(JSON.stringify(item[this.statusAttribute]))
-                if(newStatus !== null){
-                    items.push(newStatus)
-                }
-            })
-            return new DataPage<Status>(items, hasMorePages)
-        } catch(e: DynamoDBServiceException) {
-            console.log("Error retrieving new page of statuses", e.message)
-            throw e;
-        }
+        const data: QueryCommandOutput = await this.client.send(new QueryCommand(params));
+        const hasMorePages = data.LastEvaluatedKey !== undefined;
+        data.Items?.forEach((item) => {
+            const newStatus = Status.fromJson(JSON.stringify(item[this.statusAttribute]))
+            if(newStatus !== null){
+                items.push(newStatus)
+            }
+        })
+        return new DataPage<Status>(items, hasMorePages)
     }
 
     async postStory(user: User, story: Status): Promise<void> {
@@ -72,12 +62,7 @@ export class DynamoStoryDAO implements StoryDAO {
                 [this.statusAttribute]: JSON.stringify(story)
             },
         };
-        try{
-            await this.client.send(new PutCommand(params));
-        } catch(e: DynamoDBServiceException){
-            console.log("Error posting user story", e.message)
-            throw e;
-        }
+        await this.client.send(new PutCommand(params));
     }
 
     private generatePostKey(story: Status, user: User) {

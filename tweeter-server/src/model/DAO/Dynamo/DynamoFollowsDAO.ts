@@ -8,7 +8,7 @@ import {
     QueryCommand,
     QueryCommandOutput
 } from "@aws-sdk/lib-dynamodb";
-import {DynamoDBClient, DynamoDBServiceException} from "@aws-sdk/client-dynamodb";
+import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 
 export class DynamoFollowsDAO implements FollowsDAO{
     readonly tableName = "follows";
@@ -27,11 +27,7 @@ export class DynamoFollowsDAO implements FollowsDAO{
                 [this.followeeHandle]: followee.alias
             },
         };
-        try{
-            await this.client.send(new DeleteCommand(params))
-        } catch(e: DynamoDBServiceException){
-            console.log("Error deleting follower \n", e.message)
-        }
+        await this.client.send(new DeleteCommand(params))
     }
 
     async getFollower(follower: User, followee: User): Promise<User | undefined> {
@@ -52,7 +48,7 @@ export class DynamoFollowsDAO implements FollowsDAO{
     }
 
 
-    async getPageOfFollowees(followerHandle: string, lastFollowee?: string | undefined, limit?: number): Promise<DataPage<User>> {
+    async getPageOfFollowees(followerHandle: string, lastFollowee?: User | undefined, limit?: number): Promise<DataPage<User>> {
 
         const params = {
             KeyConditionExpression: this.followerHandle + " = :loc",
@@ -84,7 +80,7 @@ export class DynamoFollowsDAO implements FollowsDAO{
 
     }
 
-    async getPageOfFollowers(followeeHandle: string, lastFollower: string | undefined = undefined, limit: number = 5): Promise<DataPage<User>> {
+    async getPageOfFollowers(followeeHandle: string, lastFollower: User | undefined = undefined, limit: number = 5): Promise<DataPage<User>> {
         const params = {
             KeyConditionExpression: this.followeeHandle + " = :loc",
             ExpressionAttributeValues: {
@@ -127,12 +123,8 @@ export class DynamoFollowsDAO implements FollowsDAO{
             },
         };
 
-        try {
-            await this.client.send(new PutCommand(params))
-        } catch (e: DynamoDBServiceException) {
-            console.log("Error adding follower", e.message)
-            throw e;
-        }
+        await this.client.send(new PutCommand(params))
+
     }
 
 
