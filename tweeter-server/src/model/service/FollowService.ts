@@ -1,43 +1,49 @@
 import {AuthToken, FakeData, User} from "tweeter-shared";
+import {Service} from "./Service";
+import {UserDAO} from "../DAO/interface/UserDAO";
+import {AuthTokenDAO} from "../DAO/interface/AuthTokenDAO";
+import {FollowsDAO} from "../DAO/interface/FollowsDAO";
+import {DynamoFactoryDAO} from "../DAO/DynamoFactoryDAO";
 
-export class FollowService{
+export class FollowService extends Service {
+
+
+    private userDAO: UserDAO;
+    private authTokenDAO: AuthTokenDAO;
+    private followsDAO: FollowsDAO;
+
+    constructor(){
+        super()
+        const daoFactory = new DynamoFactoryDAO()
+        this.userDAO = daoFactory.getUserDAO();
+        this.authTokenDAO = daoFactory.getAuthTokenDAO();
+        this.followsDAO = daoFactory.getFollowsDAO();
+    }
+
     public async loadMoreFollowers(
         authToken: AuthToken,
         user: User,
         pageSize: number,
-        lastItem: User | null
+        lastItem: User | undefined
     ): Promise<[User[], boolean]> {
 
-        if (user === null) {
-            throw new Error("[Bad Request] user not found");
-        }
+        await this.validateAuthToken(authToken)
 
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
-        }
-
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getPageOfUsers(lastItem, pageSize, user);
+        const result = await this.followsDAO.getPageOfFollowers(user.alias, lastItem, pageSize);
+        return [result.values, result.hasMorePages]
     };
 
     public async loadMoreFollowees(
         authToken: AuthToken,
         user: User,
         pageSize: number,
-        lastItem: User | null
+        lastItem: User | undefined
     ): Promise<[User[], boolean]> {
 
-        if (user === null) {
-            throw new Error("[Bad Request] user not found");
-        }
+        await this.validateAuthToken(authToken)
 
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
-        }
+        const result = await this.followsDAO.getPageOfFollowers(user.alias, lastItem, pageSize);
+        return [result.values, result.hasMorePages]
 
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getPageOfUsers(lastItem, pageSize, user);
     };
-
-
 }
