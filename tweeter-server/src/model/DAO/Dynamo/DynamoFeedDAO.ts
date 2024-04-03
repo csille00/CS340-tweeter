@@ -6,9 +6,8 @@ import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 export class DynamoFeedDAO implements FeedDAO{
     private aliasAttribute = "alias"
     private timeStampAttribute = "timeStamp"
-    private statusAttr = "status"
+    private statusAttribute = "status"
     private tableName = "Feed"
-
 
     private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient());
 
@@ -33,7 +32,7 @@ export class DynamoFeedDAO implements FeedDAO{
         const data: QueryCommandOutput = await this.client.send(new QueryCommand(params));
         const hasMorePages = data.LastEvaluatedKey !== undefined;
         data.Items?.forEach((item: Record<string, any>) => {
-            const newStatus = Status.fromJson(JSON.stringify(item[this.statusAttr]))
+            const newStatus = Status.fromJson(JSON.stringify(item[this.statusAttribute]))
             if(newStatus !== null){
                 items.push(newStatus)
             }
@@ -48,7 +47,7 @@ export class DynamoFeedDAO implements FeedDAO{
             Item: {
                 [this.aliasAttribute]: user.alias,
                 [this.timeStampAttribute]: feed.timestamp,
-                [this.statusAttr]: JSON.stringify(feed)
+                [this.statusAttribute]: JSON.stringify(feed)
             },
         };
         await this.client.send(new PutCommand(params));
