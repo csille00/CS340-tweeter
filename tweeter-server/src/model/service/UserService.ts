@@ -1,15 +1,42 @@
 import {AuthToken, FakeData, User} from "tweeter-shared";
+import {DynamoFactoryDAO} from "../DAO/DynamoFactoryDAO";
+import {UserDAO} from "../DAO/interface/UserDAO";
+import {AuthTokenDAO} from "../DAO/interface/AuthTokenDAO";
+import {Service} from "./Service";
+import {FollowsDAO} from "../DAO/interface/FollowsDAO";
 
-export class UserService {
+export class UserService extends Service {
+
+     private userDAO: UserDAO;
+     private authTokenDAO: AuthTokenDAO;
+     private followsDAO: FollowsDAO;
+
+    constructor(){
+        super()
+        const daoFactory = new DynamoFactoryDAO()
+        this.userDAO = daoFactory.getUserDAO();
+        this.authTokenDAO = daoFactory.getAuthTokenDAO();
+        this.followsDAO = daoFactory.getFollowsDAO();
+    }
+
+     private createAuthToken(){
+         const currentTime = Date.now();
+         const expirationTime = (currentTime + 4 * 60 * 60 * 1000)/1000;
+         return new AuthToken(crypto.randomUUID(), expirationTime)
+     }
+
     public async login(alias: string, password: string): Promise<[User, AuthToken]> {
-        // TODO: Replace with the result of calling the server
-        let user = FakeData.instance.firstUser;
 
-        if (user === null) {
+        let user = await this.userDAO.getUserByAlias(alias);
+
+        if (user === undefined) {
             throw new Error("[Bad Request] invalid username or password");
         }
 
-        return [user, FakeData.instance.authToken];
+        const auth = this.createAuthToken()
+        await this.authTokenDAO.insertAuthToken(auth)
+
+        return [user, auth];
     };
 
     public async register (
@@ -19,22 +46,22 @@ export class UserService {
         password: string,
         userImageBytes: Uint8Array
     ): Promise<[User, AuthToken]> {
-        // Not neded now, but will be needed when you make the request to the server in milestone 3
         let imageStringBase64: string =
             Buffer.from(userImageBytes).toString("base64");
 
-        // TODO: Replace with the result of calling the server
-        let user = FakeData.instance.firstUser;
+        let user = new User(firstName, lastName, alias, imageStringBase64);
+        const currentTime = Date.now();
+        const expirationTime = currentTime + 4 * 60 * 60 * 1000;
+        const authToken = new AuthToken(crypto.randomUUID(), expirationTime)
 
-        if (user === null) {
-            throw new Error("[Bad Request] user was null when logging in");
-        }
+        await this.authTokenDAO.insertAuthToken(authToken);
+        await this.userDAO.insertUser(user, password);
 
-        return [user, FakeData.instance.authToken];
+        return [user, authToken];
     };
 
     public async doLogout (authToken: AuthToken): Promise<void> {
-        // Pause so we can see the logging out message. Delete when the call to the server is implemented.
+        await this.authTokenDAO.deleteAuthToken(authToken.token);
     };
 
     public async getIsFollowerStatus (
@@ -42,15 +69,8 @@ export class UserService {
         user: User,
         selectedUser: User
     ): Promise<boolean> {
-        // TODO: Replace with the result of calling server
 
-        if (user === null) {
-            throw new Error("[Bad Request] user not found");
-        }
-
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
-        }
+        await this.validateAuthToken(authToken);
 
         return FakeData.instance.isFollower();
     };
@@ -59,51 +79,26 @@ export class UserService {
         authToken: AuthToken,
         user: User
     ){
-
-        if (user === null) {
-            throw new Error("[Bad Request] user not found");
-        }
-
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
-        }
-
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getFolloweesCount(user);
+        await this.validateAuthToken(authToken);
+        return await this.userDAO.getFolloweeCount(user.alias)
     };
 
     public  async getFollowersCount (
         authToken: AuthToken,
         user: User
     ) {
-
-        if (user === null) {
-            throw new Error("[Bad Request] user not found");
-        }
-
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
-        }
-
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.getFollowersCount(user);
+        await this.validateAuthToken(authToken);
+        return await this.userDAO.getFollowerCount(user.alias)
     };
 
     public async getUser (
         authToken: AuthToken,
         alias: string
-    ): Promise<User | null> {
+    ): Promise<User | undefined> {
 
-        if(alias === null){
-            throw new Error("[Bad Request] invalid alias")
-        }
+        await this.validateAuthToken(authToken)
 
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
-        }
-
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.findUserByAlias(alias);
+        return await this.userDAO.getUserByAlias(alias)
     };
 
     public async unfollow (
