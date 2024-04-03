@@ -25,6 +25,7 @@ export class DynamoStoryDAO implements StoryDAO {
             await this.client.send(new DeleteCommand(params));
         } catch (e: DynamoDBServiceException) {
             console.log("Error deleting post from database", e.message)
+            throw e;
         }
     }
 
@@ -58,7 +59,7 @@ export class DynamoStoryDAO implements StoryDAO {
             return new DataPage<Status>(items, hasMorePages)
         } catch(e: DynamoDBServiceException) {
             console.log("Error retrieving new page of statuses", e.message)
-            return;
+            throw e;
         }
     }
 
@@ -75,6 +76,7 @@ export class DynamoStoryDAO implements StoryDAO {
             await this.client.send(new PutCommand(params));
         } catch(e: DynamoDBServiceException){
             console.log("Error posting user story", e.message)
+            throw e;
         }
     }
 
