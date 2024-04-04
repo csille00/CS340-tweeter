@@ -24,12 +24,15 @@ export class FollowService extends Service {
         authToken: AuthToken,
         user: User,
         pageSize: number,
-        lastItem: User | undefined
+        lastItem: User | null
     ): Promise<[User[], boolean]> {
 
         await this.validateAuthToken(authToken)
 
         const result = await this.followsDAO.getPageOfFollowers(user.alias, lastItem, pageSize);
+        if(!result){
+            throw new Error("[Bad Request] failed to get page of followers")
+        }
         return [result.values, result.hasMorePages]
     };
 
@@ -37,12 +40,15 @@ export class FollowService extends Service {
         authToken: AuthToken,
         user: User,
         pageSize: number,
-        lastItem: User | undefined
+        lastItem: User | null
     ): Promise<[User[], boolean]> {
 
         await this.validateAuthToken(authToken)
 
         const result = await this.followsDAO.getPageOfFollowers(user.alias, lastItem, pageSize);
+        if(!result){
+            throw new Error("[Bad Request] failed to get page of followers")
+        }
         return [result.values, result.hasMorePages]
 
     };

@@ -48,7 +48,7 @@ export class DynamoFollowsDAO implements FollowsDAO{
     }
 
 
-    async getPageOfFollowees(followerHandle: string, lastFollowee?: User | undefined, limit?: number): Promise<DataPage<User>> {
+    async getPageOfFollowees(followerHandle: string, lastFollowee: User | null, limit?: number): Promise<DataPage<User>> {
 
         const params = {
             KeyConditionExpression: this.followerHandle + " = :loc",
@@ -56,12 +56,13 @@ export class DynamoFollowsDAO implements FollowsDAO{
                 ":loc": followerHandle,
             },
             TableName: this.tableName,
+            IndexName: this.indexName, // Use the secondary index
             Limit: limit,
             ExclusiveStartKey:
-                lastFollowee === undefined
+                lastFollowee === null
                     ? undefined
                     : {
-                        [this.followeeHandle]: lastFollowee,
+                        [this.followeeHandle]: lastFollowee.alias,
                         [this.followerHandle]: followerHandle,
                     },
         };
@@ -80,7 +81,7 @@ export class DynamoFollowsDAO implements FollowsDAO{
 
     }
 
-    async getPageOfFollowers(followeeHandle: string, lastFollower: User | undefined = undefined, limit: number = 5): Promise<DataPage<User>> {
+    async getPageOfFollowers(followeeHandle: string, lastFollower: User | null, limit: number = 5): Promise<DataPage<User>> {
         const params = {
             KeyConditionExpression: this.followeeHandle + " = :loc",
             ExpressionAttributeValues: {
@@ -90,10 +91,10 @@ export class DynamoFollowsDAO implements FollowsDAO{
             IndexName: this.indexName,
             Limit: limit,
             ExclusiveStartKey:
-                lastFollower === undefined
+                lastFollower === null
                     ? undefined
                     : {
-                        [this.followerHandle]: lastFollower,
+                        [this.followerHandle]: lastFollower.alias,
                         [this.followeeHandle]: followeeHandle,
                     },
         };

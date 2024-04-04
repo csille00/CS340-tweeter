@@ -34,7 +34,7 @@ export class UserService extends Service {
         }
 
         const auth = this.createAuthToken()
-        await this.authTokenDAO.insertAuthToken(auth)
+        await this.authTokenDAO.insertAuthToken(auth, alias)
 
         return [user, auth];
     };
@@ -54,7 +54,7 @@ export class UserService extends Service {
         const expirationTime = currentTime + 4 * 60 * 60 * 1000;
         const authToken = new AuthToken(crypto.randomUUID(), expirationTime)
 
-        await this.authTokenDAO.insertAuthToken(authToken);
+        await this.authTokenDAO.insertAuthToken(authToken, alias);
         await this.userDAO.insertUser(user, password);
 
         return [user, authToken];
@@ -72,7 +72,9 @@ export class UserService extends Service {
 
         await this.validateAuthToken(authToken);
 
-        return FakeData.instance.isFollower();
+        const status = await this.followsDAO.getFollower(user, selectedUser)
+
+        return !!status;
     };
 
     public async getFolloweesCount (
@@ -105,13 +107,12 @@ export class UserService extends Service {
         authToken: AuthToken,
         userToUnfollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
-        if (userToUnfollow === null) {
-            throw new Error("[Bad Request] user not found");
+        let alias = await this.validateAuthToken(authToken)
+        let user = await this.userDAO.getUserByAlias(alias)
+        if(!user){
+            throw new Error("[Bad Request] user invalid")
         }
-
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
-        }
+        await this.followsDAO.deleteFollower(user, userToUnfollow)
 
         let followersCount = await this.getFollowersCount(authToken, userToUnfollow);
         let followeesCount = await this.getFolloweesCount(authToken, userToUnfollow);
@@ -128,13 +129,12 @@ export class UserService extends Service {
         userToFollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
 
-        if (userToFollow === null) {
-            throw new Error("[Bad Request] user not found");
+        let alias = await this.validateAuthToken(authToken)
+        let user = await this.userDAO.getUserByAlias(alias)
+        if(!user){
+            throw new Error("[Bad Request] user invalid")
         }
-
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
-        }
+        await this.followsDAO.insertFollower(user, userToFollow)
 
         let followersCount = await this.getFollowersCount(authToken, userToFollow);
         let followeesCount = await this.getFolloweesCount(authToken, userToFollow);

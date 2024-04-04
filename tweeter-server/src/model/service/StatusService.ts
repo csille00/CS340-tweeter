@@ -5,21 +5,22 @@ import {AuthTokenDAO} from "../DAO/interface/AuthTokenDAO";
 import {UserDAO} from "../DAO/interface/UserDAO";
 import {StoryDAO} from "../DAO/interface/StoryDAO";
 import {Service} from "./Service";
+import {FollowsDAO} from "../DAO/interface/FollowsDAO";
 
 export class StatusService extends Service {
 
     feedDAO: FeedDAO;
-    authDAO: AuthTokenDAO;
     userDAO: UserDAO;
     storyDAO: StoryDAO;
+    followsDAO: FollowsDAO;
 
     constructor() {
         super()
         const factoryDAO = new DynamoFactoryDAO()
         this.feedDAO = factoryDAO.getFeedDAO()
-        this.authDAO = factoryDAO.getAuthTokenDAO()
         this.userDAO = factoryDAO.getUserDAO()
         this.storyDAO = factoryDAO.getStoryDAO()
+        this.followsDAO = factoryDAO.getFollowsDAO()
     }
 
 
@@ -51,13 +52,26 @@ export class StatusService extends Service {
         newStatus: Status
     ): Promise<void> {
 
-        if(authToken === null){ //change this to a real authToken check
-            throw new Error("[AuthError] invalid token")
+        const userAlias = await this.validateAuthToken(authToken)
+        const user = await this.userDAO.getUserByAlias(userAlias)
+        if(user === undefined){
+            throw new Error("[Bad Request] user not defined")
         }
+        await this.storyDAO.postStory(user, newStatus)
+        let hasMoreItems = true;
+        let followers: User[] = []
+        let lastItem = null;
+        while(hasMoreItems){
+            let result = await this.followsDAO.getPageOfFollowers(userAlias, lastItem, 20);
+            if(result){
+                followers = result.values;
+                hasMoreItems = result.hasMorePages;
+                lastItem = result.values[followers.length - 1]
 
-        const userAlias = await this.authDAO.getAuthToken(authToken.token)
-        const user = this
-
-        // return this.feedDAO.postFeed(newStatus)
+                for(const follower of followers){
+                    await this.feedDAO.postFeed(follower, newStatus)
+                }
+            }
+        }
     };
 }
