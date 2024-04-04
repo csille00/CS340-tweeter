@@ -14,6 +14,7 @@ export class DynamoStoryDAO implements StoryDAO {
     private timeStampAttribute = "timeStamp"
     private statusAttribute = "status"
     private tableName = "Story"
+    private index = "alias-timeStamp-index"
 
     private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient());
     async deleteStory(story: Status, user: User) {
@@ -31,26 +32,25 @@ export class DynamoStoryDAO implements StoryDAO {
                 ":loc": user.alias,
             },
             TableName: this.tableName,
+            IndexName: this.index,
             Limit: limit,
-            ExclusiveStartKey:
-                lastStatus === null
-                    ? undefined
-                    : {
-                        [this.timeStampAttribute]: lastStatus.timestamp,
-                        [this.aliasAttribute]: user.alias,
-                    }
+            ExclusiveStartKey: lastStatus === null ? undefined : {
+                [this.aliasAttribute]: user.alias,
+                [this.timeStampAttribute]: lastStatus.timestamp,
+            }
         };
 
         const items: Status[] = [];
         const data: QueryCommandOutput = await this.client.send(new QueryCommand(params));
         const hasMorePages = data.LastEvaluatedKey !== undefined;
-        data.Items?.forEach((item) => {
-            const newStatus = Status.fromJson(JSON.stringify(item[this.statusAttribute]))
+        data.Items?.forEach((item:Record<string, any>) => {
+            const newStatusJson = JSON.parse(item[this.statusAttribute]);
+            const newStatus = new Status(newStatusJson._post, newStatusJson.user, newStatusJson._timestamp)
             if(newStatus !== null){
-                items.push(newStatus)
+                items.push(newStatus);
             }
-        })
-        return new DataPage<Status>(items, hasMorePages)
+        });
+        return new DataPage<Status>(items, hasMorePages);
     }
 
     async postStory(user: User, story: Status): Promise<void> {
