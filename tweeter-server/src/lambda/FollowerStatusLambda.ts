@@ -4,10 +4,21 @@ import {
     FollowerStatusResponse,
     TweeterResponse
 } from "tweeter-shared/dist/model/net/Response";
+import {AuthToken, User} from "tweeter-shared";
 
 export const handler = async(event: FollowerStatusRequest)=> {
-    const resp = await new UserService().getIsFollowerStatus(event.token, event.user, event.selectedUser)
-    if(!resp){
+
+    let authToken = AuthToken.fromJson(JSON.stringify(event.token))
+    if(authToken === null){throw new Error("[AuthError] authToken not found")}
+
+    let user = User.fromJson(JSON.stringify(event.user))
+    if(user === null){ throw new Error("[Bad Request] user not found")}
+
+    let selectedUser = User.fromJson(JSON.stringify(event.selectedUser))
+    if(selectedUser === null){ throw new Error("[Bad Request] user not found")}
+
+    const resp = await new UserService().getIsFollowerStatus(authToken, user, selectedUser)
+    if(resp === undefined){
         throw new Error("[Not Found] Follow status not found");
     }
     return new FollowerStatusResponse(true, "GetIsFollowerStatus Suceesfully returned", resp);

@@ -1,11 +1,22 @@
 import {UserRequest} from "tweeter-shared/dist/model/net/Request";
 import {UserService} from "../model/service/UserService";
 import {FollowCountResponse, TweeterResponse} from "tweeter-shared/dist/model/net/Response";
+import {AuthToken, User} from "tweeter-shared";
 
 export const handler = async(event: UserRequest) => {
-    const resp = await new UserService().getFollowersCount(event.token, event.user);
-    if(!resp){
-        throw new Error("[Not Found] Follow count not found");
+    try{
+        let authToken = AuthToken.fromJson(JSON.stringify(event.token))
+        if(authToken === null){throw new Error("[AuthError] authToken not found")}
+
+        let user = User.fromJson(JSON.stringify(event.user))
+        if(user === null){ throw new Error("[Bad Request] user not found")}
+
+        const resp = await new UserService().getFollowersCount(authToken, user);
+        if(resp === undefined){
+            throw new Error("[Not Found] Follow count not found");
+        }
+        return new FollowCountResponse(true, "FollowerCountLambda Suceesfully returned", resp);
+    } catch (e){
+        console.log(e)
     }
-    return new FollowCountResponse(true, "FollowerCountLambda Suceesfully returned", resp);
 }

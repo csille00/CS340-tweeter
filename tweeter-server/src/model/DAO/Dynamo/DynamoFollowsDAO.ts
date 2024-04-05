@@ -1,5 +1,5 @@
 import {FollowsDAO} from "../interface/FollowsDAO";
-import {DataPage, User} from "tweeter-shared";
+import {DataPage, Status, User} from "tweeter-shared";
 import {
     DeleteCommand,
     DynamoDBDocumentClient,
@@ -13,18 +13,18 @@ import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 export class DynamoFollowsDAO implements FollowsDAO{
     readonly tableName = "follows";
     readonly indexName = "follows_index";
-    readonly followerHandle = "follower_handle";
-    readonly followeeHandle = "followee_handle";
-    readonly followerName = "follower_name";
-    readonly followeeName = "followee_name";
+    readonly followerHandleAttribute = "follower_handle";
+    readonly followeeHandleAttribute = "followee_handle";
+    readonly followerUserAttribute = "follower_name";
+    readonly followeeUserAttribute = "followee_name";
 
     private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient());
     async deleteFollower(follower: User, followee: User): Promise<void> {
         const params = {
             TableName: this.tableName,
             Key: {
-                [this.followerHandle]: follower.alias,
-                [this.followeeHandle]: followee.alias
+                [this.followerHandleAttribute]: follower.alias,
+                [this.followeeHandleAttribute]: followee.alias
             },
         };
         await this.client.send(new DeleteCommand(params))
@@ -35,8 +35,8 @@ export class DynamoFollowsDAO implements FollowsDAO{
         const params = {
             TableName: this.tableName,
             Key: {
-                [this.followerHandle]: follower.alias,
-                [this.followeeHandle]: followee.alias
+                [this.followerHandleAttribute]: follower.alias,
+                [this.followeeHandleAttribute]: followee.alias
             }
         };
         const output = await this.client.send(new GetCommand(params));
@@ -51,19 +51,18 @@ export class DynamoFollowsDAO implements FollowsDAO{
     async getPageOfFollowees(followerHandle: string, lastFollowee: User | null, limit?: number): Promise<DataPage<User>> {
 
         const params = {
-            KeyConditionExpression: this.followerHandle + " = :loc",
+            KeyConditionExpression: this.followerHandleAttribute + " = :loc",
             ExpressionAttributeValues: {
                 ":loc": followerHandle,
             },
             TableName: this.tableName,
-            IndexName: this.indexName, // Use the secondary index
             Limit: limit,
             ExclusiveStartKey:
                 lastFollowee === null
                     ? undefined
                     : {
-                        [this.followeeHandle]: lastFollowee.alias,
-                        [this.followerHandle]: followerHandle,
+                        [this.followeeHandleAttribute]: lastFollowee.alias,
+                        [this.followerHandleAttribute]: followerHandle,
                     },
         };
 
@@ -71,9 +70,9 @@ export class DynamoFollowsDAO implements FollowsDAO{
         const data: QueryCommandOutput = await this.client.send(new QueryCommand(params));
         const hasMorePages = data.LastEvaluatedKey !== undefined;
         data.Items?.forEach((item) => {
-            const newFollower = User.fromJson(JSON.stringify(item[this.followerHandle]))
-            if(newFollower !== null){
-                items.push(newFollower)
+            const newFollowerJson = JSON.parse(item[this.followeeUserAttribute])
+            if(newFollowerJson !== null){
+                items.push(newFollowerJson)
             }
         });
 
@@ -83,7 +82,7 @@ export class DynamoFollowsDAO implements FollowsDAO{
 
     async getPageOfFollowers(followeeHandle: string, lastFollower: User | null, limit: number = 5): Promise<DataPage<User>> {
         const params = {
-            KeyConditionExpression: this.followeeHandle + " = :loc",
+            KeyConditionExpression: this.followeeHandleAttribute + " = :loc",
             ExpressionAttributeValues: {
                 ":loc": followeeHandle,
             },
@@ -94,8 +93,8 @@ export class DynamoFollowsDAO implements FollowsDAO{
                 lastFollower === null
                     ? undefined
                     : {
-                        [this.followerHandle]: lastFollower.alias,
-                        [this.followeeHandle]: followeeHandle,
+                        [this.followerHandleAttribute]: lastFollower.alias,
+                        [this.followeeHandleAttribute]: followeeHandle,
                     },
         };
 
@@ -103,9 +102,9 @@ export class DynamoFollowsDAO implements FollowsDAO{
         const data: QueryCommandOutput = await this.client.send(new QueryCommand(params));
         const hasMorePages = data.LastEvaluatedKey !== undefined;
         data.Items?.forEach((item) => {
-            const newFollowee = User.fromJson(JSON.stringify(item[this.followeeHandle]))
-            if(newFollowee !== null){
-                items.push(newFollowee)
+            const newFollowerJson = JSON.parse(item[this.followerUserAttribute])
+            if(newFollowerJson !== null){
+                items.push(newFollowerJson)
             }
         });
 
@@ -117,10 +116,10 @@ export class DynamoFollowsDAO implements FollowsDAO{
         const params = {
             TableName: this.tableName,
             Item: {
-                [this.followerHandle]: follower.alias,
-                [this.followeeHandle]: followee.alias,
-                [this.followerName]: follower.name,
-                [this.followeeName]: followee.name
+                [this.followerHandleAttribute]: follower.alias,
+                [this.followeeHandleAttribute]: followee.alias,
+                [this.followerUserAttribute]: JSON.stringify(follower),
+                [this.followeeUserAttribute]: JSON.stringify(followee)
             },
         };
 

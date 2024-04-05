@@ -1,11 +1,18 @@
 import {UserService} from "../model/service/UserService";
-import {UserRequest} from "tweeter-shared";
+import {AuthToken, User, UserRequest} from "tweeter-shared";
 import {FollowResponse, TweeterResponse} from "tweeter-shared/dist/model/net/Response";
 
 export const handler = async (event: UserRequest) => {
-    const resp = await new UserService().unfollow(event.token, event.user);
 
-    if(!resp){
+    let authToken = AuthToken.fromJson(JSON.stringify(event.token))
+    if(authToken === null){throw new Error("[AuthError] authToken not found")}
+
+    let user = User.fromJson(JSON.stringify(event.user))
+    if(user === null){ throw new Error("[Bad Request] user not found")}
+
+    const resp = await new UserService().unfollow(authToken, user);
+
+    if(resp === undefined){
         throw new Error("[Not Found] user not found");
     }
 

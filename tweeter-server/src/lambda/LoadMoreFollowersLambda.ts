@@ -1,18 +1,28 @@
 import { LoadUserItemsResponse, TweeterResponse} from "tweeter-shared/dist/model/net/Response";
 import { UserItemsRequest} from "tweeter-shared/dist/model/net/Request";
 import {FollowService} from "../model/service/FollowService";
-import {Status, User} from "tweeter-shared";
+import {AuthToken, Status, User} from "tweeter-shared";
 
 export const handler = async (event: UserItemsRequest) => {
-    let deserializedLastItem = null
-    if(event.lastItem !== null){
-        deserializedLastItem = User.fromJson(JSON.stringify(event.lastItem))
-    }
-    const resp = await new FollowService().loadMoreFollowers(event.token, event.user, event.pageSize, deserializedLastItem)
+    try{
+        let authToken = AuthToken.fromJson(JSON.stringify(event.token))
+        if(authToken === null){throw new Error("[AuthError] authToken not found")}
 
-    if(!resp){
-        throw new Error("[Not Found] Followers not found");
-    }
+        let user = User.fromJson(JSON.stringify(event.user))
+        if(user === null){ throw new Error("[Bad Request] user not found")}
 
-    return new LoadUserItemsResponse(true, resp[0], resp[1], "Load more followers returned successfully")
+        let deserializedLastItem = null
+        if(event.lastItem !== null){
+            deserializedLastItem = User.fromJson(JSON.stringify(event.lastItem))
+        }
+        const resp = await new FollowService().loadMoreFollowers(authToken, user, event.pageSize, deserializedLastItem)
+
+        if(resp === undefined){
+            throw new Error("[Not Found] Followers not found");
+        }
+
+        return new LoadUserItemsResponse(true, resp[0], resp[1], "Load more followers returned successfully")
+    } catch (e){
+        console.log(e)
+    }
 }

@@ -32,7 +32,8 @@ export class DynamoFeedDAO implements FeedDAO{
         const data: QueryCommandOutput = await this.client.send(new QueryCommand(params));
         const hasMorePages = data.LastEvaluatedKey !== undefined;
         data.Items?.forEach((item: Record<string, any>) => {
-            const newStatus = Status.fromJson(JSON.stringify(item[this.statusAttribute]))
+            const newStatusJson = JSON.parse(item[this.statusAttribute]);
+            const newStatus = new Status(newStatusJson._post, newStatusJson.user, newStatusJson._timestamp)
             if(newStatus !== null){
                 items.push(newStatus)
             }

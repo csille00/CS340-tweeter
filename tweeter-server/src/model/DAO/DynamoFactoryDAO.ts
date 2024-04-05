@@ -9,6 +9,8 @@ import {DynamoFeedDAO} from "./Dynamo/DynamoFeedDAO";
 import {DynamoFollowsDAO} from "./Dynamo/DynamoFollowsDAO";
 import {DynamoStoryDAO} from "./Dynamo/DynamoStoryDAO";
 import {DynamoUserDAO} from "./Dynamo/DynamoUserDAO";
+import {S3Dao} from "./interface/S3Dao";
+import {DynamoS3Dao} from "./Dynamo/DynamoS3Dao";
 
 export class DynamoFactoryDAO implements FactoryDAO {
     getAuthTokenDAO(): AuthTokenDAO {
@@ -29,6 +31,10 @@ export class DynamoFactoryDAO implements FactoryDAO {
 
     getUserDAO(): UserDAO {
         return new DynamoUserDAO();
+    }
+
+    getS3DAO(): S3Dao {
+        return new DynamoS3Dao();
     }
 
 }

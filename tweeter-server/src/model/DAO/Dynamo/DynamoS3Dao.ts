@@ -4,8 +4,8 @@ import { S3Client, PutObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3"
 
 export class DynamoS3Dao implements S3Dao {
 
-    BUCKET = "lambdas-csille00"
-    REGION = "us-west-2"
+    private BUCKET = "lambdas-csille00"
+    private REGION = "us-west-2"
     async putImage(
         fileName: string,
         imageStringBase64Encoded: string
@@ -26,7 +26,7 @@ export class DynamoS3Dao implements S3Dao {
         try {
             await client.send(c);
             return (
-                `https://${this.BUCKET}.s3.${this.REGION}.amazonaws.com/image/{fileName}`
+                `https://${this.BUCKET}.s3.${this.REGION}.amazonaws.com/image/${fileName}`
             );
         } catch (error) {
             throw Error("s3 put image failed with: " + error);

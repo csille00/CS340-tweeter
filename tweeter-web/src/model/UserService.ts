@@ -80,7 +80,7 @@ export class UserService {
         authToken: AuthToken,
         userToUnfollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
-        const response = await this.serverFacade.follow(new UserRequest(userToUnfollow, authToken))
+        const response = await this.serverFacade.unfollow(new UserRequest(userToUnfollow, authToken))
         return [response.followersCount, response.followeesCount]
     };
 
@@ -88,7 +88,7 @@ export class UserService {
         authToken: AuthToken,
         userToFollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
-        const response = await this.serverFacade.unfollow(new UserRequest(userToFollow, authToken))
+        const response = await this.serverFacade.follow(new UserRequest(userToFollow, authToken))
         return [response.followersCount, response.followeesCount]
     };
 }

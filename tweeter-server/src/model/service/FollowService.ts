@@ -45,7 +45,7 @@ export class FollowService extends Service {
 
         await this.validateAuthToken(authToken)
 
-        const result = await this.followsDAO.getPageOfFollowers(user.alias, lastItem, pageSize);
+        const result = await this.followsDAO.getPageOfFollowees(user.alias, lastItem, pageSize);
         if(!result){
             throw new Error("[Bad Request] failed to get page of followers")
         }

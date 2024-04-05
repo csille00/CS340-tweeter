@@ -23,7 +23,6 @@ export class StatusService extends Service {
         this.followsDAO = factoryDAO.getFollowsDAO()
     }
 
-
     public async loadMoreStoryItems (
         authToken: AuthToken,
         user: User,
@@ -69,7 +68,10 @@ export class StatusService extends Service {
                 lastItem = result.values[followers.length - 1]
 
                 for(const follower of followers){
-                    await this.feedDAO.postFeed(follower, newStatus)
+                    let newFollower = User.fromJson(JSON.stringify(follower))
+                    if(newFollower){
+                        await this.feedDAO.postFeed(newFollower, newStatus)
+                    }
                 }
             }
         }

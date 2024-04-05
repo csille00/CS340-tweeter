@@ -4,12 +4,14 @@ import {UserDAO} from "../DAO/interface/UserDAO";
 import {AuthTokenDAO} from "../DAO/interface/AuthTokenDAO";
 import {Service} from "./Service";
 import {FollowsDAO} from "../DAO/interface/FollowsDAO";
+import {S3Dao} from "../DAO/interface/S3Dao";
 
 export class UserService extends Service {
 
      private userDAO: UserDAO;
      private authTokenDAO: AuthTokenDAO;
      private followsDAO: FollowsDAO;
+     private s3DAO: S3Dao
 
     constructor(){
         super()
@@ -17,6 +19,7 @@ export class UserService extends Service {
         this.userDAO = daoFactory.getUserDAO();
         this.authTokenDAO = daoFactory.getAuthTokenDAO();
         this.followsDAO = daoFactory.getFollowsDAO();
+        this.s3DAO = daoFactory.getS3DAO()
     }
 
      private createAuthToken(){
@@ -49,7 +52,9 @@ export class UserService extends Service {
         let imageStringBase64: string =
             Buffer.from(userImageBytes).toString("base64");
 
-        let user = new User(firstName, lastName, alias, imageStringBase64);
+        let s3_link = await this.s3DAO.putImage(`${alias}-profile-picture`, imageStringBase64)
+
+        let user = new User(firstName, lastName, alias, s3_link);
         const currentTime = Date.now();
         const expirationTime = currentTime + 4 * 60 * 60 * 1000;
         const authToken = new AuthToken(crypto.randomUUID(), expirationTime)
@@ -82,7 +87,11 @@ export class UserService extends Service {
         user: User
     ){
         await this.validateAuthToken(authToken);
-        return await this.userDAO.getFolloweeCount(user.alias)
+        const count =  await this.userDAO.getFolloweeCount(user.alias);
+        if(count === undefined){
+            throw new Error("FolloweeCount Undefined")
+        }
+        return count;
     };
 
     public  async getFollowersCount (

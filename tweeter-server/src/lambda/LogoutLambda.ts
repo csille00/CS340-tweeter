@@ -1,8 +1,13 @@
 import {TweeterResponse} from "tweeter-shared/dist/model/net/Response";
 import {UserService} from "../model/service/UserService";
 import {LogoutRequest} from "tweeter-shared/dist/model/net/Request";
+import {AuthToken} from "tweeter-shared";
 
 export const handler = async (event: LogoutRequest): Promise<TweeterResponse | undefined> => {
-        await new UserService().doLogout(event.token);
+
+        let authToken = AuthToken.fromJson(JSON.stringify(event.token))
+        if(authToken === null){throw new Error("[AuthError] authToken not found")}
+
+        await new UserService().doLogout(authToken);
         return new TweeterResponse(true)
 }

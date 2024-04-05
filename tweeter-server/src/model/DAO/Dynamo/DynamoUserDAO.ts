@@ -90,7 +90,7 @@ export class DynamoUserDAO implements UserDAO{
         return followerCount
     }
 
-    async getFolloweeCount(alias: string) {
+    async getFolloweeCount(alias: string): Promise<number> {
         const params = {
             TableName: this.tableName,
             Key: this.generateAliasKey(alias)
