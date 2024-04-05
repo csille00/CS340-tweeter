@@ -25,3 +25,9 @@ yarn-error.log*
 /dist
 /tweeter-server/node_modules/
 /tweeter-server/nodejs/
+tweeter-server/dist
+tweeter-server/updateLayers.sh
+tweeter-server/uploadLambdas.sh
+tweeter-server/zipFuncs.sh
+tweeter-server/dist.zip
+tweeter-server/nodejs.zip
