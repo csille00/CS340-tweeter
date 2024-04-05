@@ -1,24 +1,24 @@
 import {DynamoAuthTokenDAO} from "./Dynamo/DynamoAuthTokenDAO";
-import {AuthToken, Status, User, UserRequest} from "tweeter-shared";
+import {AuthToken, FollowerStatusRequest, Status, User, UserRequest} from "tweeter-shared";
 import {DynamoUserDAO} from "./Dynamo/DynamoUserDAO";
 import {UserService} from "../service/UserService";
 import {FollowService} from "../service/FollowService";
 import {StatusService} from "../service/StatusService";
 import {DynamoS3Dao} from "./Dynamo/DynamoS3Dao";
-import { handler } from "../../lambda/LoadMoreFolloweesLambda"
+import { handler } from "../../lambda/FollowerStatusLambda"
 import {PostStatusRequest, StatusItemsRequest, UserItemsRequest} from "tweeter-shared/dist/model/net/Request";
 import {LoadUserItemsResponse} from "tweeter-shared/dist/model/net/Response";
+import {ServerFacade} from "tweeter-web/src/model/net/ServerFacade";
 
 const authTokenDao = new DynamoAuthTokenDAO()
 const userDao = new DynamoUserDAO()
 const s3Dao = new DynamoS3Dao()
-// const authTokenDao = new DynamoAuthTokenDAO()
-// const authTokenDao = new DynamoAuthTokenDAO()
-// const authTokenDao = new DynamoAuthTokenDAO()
 const asyncFunc = async () => {
     console.log("hello")
     try{
-        await s3Dao.putImage("test", "asd")
+        await userDao.incrementFollowerCount("@cass")
+        const user = await userDao.getUserByAlias("@cass")
+        console.log(user)
         // await authTokenDao.deleteAuthToken("asd")
     } catch (e: any) {
         console.log("loser.")
@@ -67,7 +67,11 @@ async function testMain(){
     var json3 = {"token":{"_token":"eef627fa-9690-4ecd-8b9e-6a767c72ffb2","_timestamp":1712287448.866},"status":{"_post":"@cassidellis hey","user":{"_firstName":"cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":""},"_timestamp":1712273193556,"_segments":[{"_text":"@cassidellis","_startPostion":0,"_endPosition":12,"_type":"Alias"},{"_text":" hey","_startPostion":12,"_endPosition":16,"_type":"Text"}]}} as unknown as PostStatusRequest
     var getFollowerCountJson = {"user":{"_firstName":"Cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"token":{"_token":"e967f0ff-c97f-4d79-b1e4-597f62cfcbcb","_timestamp":1712289911789}} as unknown as UserRequest
     var loadMoreFollowersJson = {"token":{"_token":"e967f0ff-c97f-4d79-b1e4-597f62cfcbcb","_timestamp":1712289911789},"user":{"_firstName":"Cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"pageSize":10,"lastItem":null} as unknown as UserItemsRequest
-    var response = await handler(loadMoreFollowersJson)
+    var loadMoreFeedItems = {"token":{"_token":"36747caf-52f3-43f3-8d6b-486b882b83c0","_timestamp":1712312079.005},"user":{"_firstName":"cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"pageSize":10,"lastItem":null} as unknown as StatusItemsRequest
+    var isFollowerStatus = {"user":{"_firstName":"cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"token":{"_token":"ad5ff250-93df-4f8e-bd60-adf710b55cf3","_timestamp":1712314452.292},"selectedUser":{"_firstName":"connor","_lastName":"ellis","_alias":"@connor","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@connor-profile-picture"}} as unknown as FollowerStatusRequest
+
+    var response = await handler(isFollowerStatus)
+    // var response = await new ServerFacade().loadMoreFeedItems(loadMoreFeedItems)
     console.log(response)
     // console.log(result1, '\n', result2, '\n', result2, '\n', result3, '\n')
 
