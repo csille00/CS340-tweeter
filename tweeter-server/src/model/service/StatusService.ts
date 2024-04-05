@@ -52,7 +52,8 @@ export class StatusService extends Service {
     ): Promise<void> {
 
         const userAlias = await this.validateAuthToken(authToken)
-        const user = await this.userDAO.getUserByAlias(userAlias)
+        const result = await this.userDAO.getUserByAlias(userAlias)
+        const user = result[0]
         if(user === undefined){
             throw new Error("[Bad Request] user not defined")
         }

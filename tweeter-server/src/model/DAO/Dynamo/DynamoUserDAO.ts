@@ -25,24 +25,22 @@ export class DynamoUserDAO implements UserDAO{
 
         await this.client.send(new DeleteCommand(params));
     }
-
-    async getUserByAlias(alias: String) {
+    async getUserByAlias(alias: String): Promise<[User | undefined, string]> {
         const params = {
             TableName: this.tableName,
             Key: {
                 alias,
             },
         };
-
         const user = await this.client.send(new GetCommand(params))
         return user.Item == undefined
-            ? undefined
-            : new User(
+            ? [undefined, ""]
+            : [new User(
                 user.Item[this.firstNameAttribute],
                 user.Item[this.lastNameAttribute],
                 user.Item[this.aliasAttribute],
                 user.Item[this.imageUrlAttribute],
-            );
+            ), user.Item[this.passwordAttribute]];
     }
 
     async insertUser(user: User, passwordHash: string): Promise<void> {

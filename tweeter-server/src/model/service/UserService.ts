@@ -1,10 +1,11 @@
-import {AuthToken, FakeData, User} from "tweeter-shared";
+import {AuthToken, User} from "tweeter-shared";
 import {DynamoFactoryDAO} from "../DAO/DynamoFactoryDAO";
 import {UserDAO} from "../DAO/interface/UserDAO";
 import {AuthTokenDAO} from "../DAO/interface/AuthTokenDAO";
 import {Service} from "./Service";
 import {FollowsDAO} from "../DAO/interface/FollowsDAO";
 import {S3Dao} from "../DAO/interface/S3Dao";
+import { SHA256 } from "crypto-js";
 
 export class UserService extends Service {
 
@@ -30,9 +31,9 @@ export class UserService extends Service {
 
     public async login(alias: string, password: string): Promise<[User, AuthToken]> {
 
-        let user = await this.userDAO.getUserByAlias(alias);
-
-        if (user === undefined) {
+        let result = await this.userDAO.getUserByAlias(alias);
+        const user = result[0];
+        if (user === undefined || SHA256(password).toString() !== result[1]) {
             throw new Error("[Bad Request] invalid username or password");
         }
 
@@ -60,7 +61,7 @@ export class UserService extends Service {
         const authToken = new AuthToken(crypto.randomUUID(), expirationTime)
 
         await this.authTokenDAO.insertAuthToken(authToken, alias);
-        await this.userDAO.insertUser(user, password);
+        await this.userDAO.insertUser(user, SHA256(password).toString());
 
         return [user, authToken];
     };
@@ -109,7 +110,7 @@ export class UserService extends Service {
 
         await this.validateAuthToken(authToken)
 
-        return await this.userDAO.getUserByAlias(alias)
+        return (await this.userDAO.getUserByAlias(alias))[0]
     };
 
     public async unfollow (
@@ -117,7 +118,8 @@ export class UserService extends Service {
         userToUnfollow: User
     ): Promise<[followersCount: number, followeesCount: number]> {
         let alias = await this.validateAuthToken(authToken)
-        let user = await this.userDAO.getUserByAlias(alias)
+        let result = await this.userDAO.getUserByAlias(alias)
+        const user = result[0]
         if(!user){
             throw new Error("[Bad Request] user invalid")
         }
@@ -139,7 +141,8 @@ export class UserService extends Service {
     ): Promise<[followersCount: number, followeesCount: number]> {
 
         let alias = await this.validateAuthToken(authToken)
-        let user = await this.userDAO.getUserByAlias(alias)
+        let result = await this.userDAO.getUserByAlias(alias)
+        const user = result[0]
         if(!user){
             throw new Error("[Bad Request] user invalid")
         }
