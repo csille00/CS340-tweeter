@@ -124,6 +124,8 @@ export class UserService extends Service {
             throw new Error("[Bad Request] user invalid")
         }
         await this.followsDAO.deleteFollower(user, userToUnfollow)
+        await this.userDAO.decrementFolloweeCount(alias)
+        await this.userDAO.decrementFollowerCount(userToUnfollow.alias)
 
         let followersCount = await this.getFollowersCount(authToken, userToUnfollow);
         let followeesCount = await this.getFolloweesCount(authToken, userToUnfollow);
@@ -147,6 +149,8 @@ export class UserService extends Service {
             throw new Error("[Bad Request] user invalid")
         }
         await this.followsDAO.insertFollower(user, userToFollow)
+        await this.userDAO.incrementFolloweeCount(alias)
+        await this.userDAO.incrementFollowerCount(userToFollow.alias)
 
         let followersCount = await this.getFollowersCount(authToken, userToFollow);
         let followeesCount = await this.getFolloweesCount(authToken, userToFollow);
