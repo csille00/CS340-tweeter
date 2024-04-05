@@ -1,6 +1,6 @@
 import "./UserInfo.css";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfoHook from "./UserInfoHook";
 import {UserInfoPresenter, UserInfoView} from "../../presenter/UserInfoPresenter";
@@ -23,7 +23,7 @@ const UserInfo = () => {
     presenter.setIsFollowerStatus(authToken!, currentUser!, displayedUser!);
     presenter.setNumbFollowees(authToken!, displayedUser!);
     presenter.setNumbFollowers(authToken!, displayedUser!);
-  }, []);
+  }, [displayedUser]);
 
   const listener: UserInfoView = {
     setIsFollower: setIsFollower,
