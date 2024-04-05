@@ -31,6 +31,7 @@ export class DynamoStoryDAO implements StoryDAO {
             ExpressionAttributeValues: {
                 ":loc": user.alias,
             },
+            ScanIndexForward: false,
             TableName: this.tableName,
             IndexName: this.index,
             Limit: limit,

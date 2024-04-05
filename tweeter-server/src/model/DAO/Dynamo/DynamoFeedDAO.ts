@@ -17,6 +17,7 @@ export class DynamoFeedDAO implements FeedDAO{
             ExpressionAttributeValues: {
                 ":loc": user.alias,
             },
+            ScanIndexForward: false,
             TableName: this.tableName,
             Limit: limit,
             ExclusiveStartKey:
