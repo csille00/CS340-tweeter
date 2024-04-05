@@ -43,7 +43,12 @@ export class DynamoFollowsDAO implements FollowsDAO{
         if (output.Item === undefined) {
             return undefined;
         } else {
-            return undefined; //TODO: fix this
+            const userJson = output.Item[this.followerUserAttribute];
+            if (userJson) {
+                return JSON.parse(userJson);
+            } else {
+                return new User(userJson._firstName, userJson._lastName, userJson._alias, userJson._imageUrl);
+            }
         }
     }
 
