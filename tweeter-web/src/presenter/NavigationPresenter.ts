@@ -19,13 +19,13 @@ export class NavigationPresenter extends Presenter<NavigationView> {
     public async navigateToUser (auth: AuthToken|null, rawAlias: string, user: User|null): Promise<void> {
         await this.doFailureReportingOperation(async () => {
             let alias = this.extractAlias(rawAlias);
-            let user = await this.service.getUser(auth!, alias);
+            let userToDisplay = await this.service.getUser(auth!, alias);
 
-            if (!!user) {
-                if (user!.equals(user)) {
+            if (!!userToDisplay && !!user) {
+                if (userToDisplay!.equals(user)) {
                     this.view.setDisplayedUser(user!);
                 } else {
-                    this.view.setDisplayedUser(user);
+                    this.view.setDisplayedUser(userToDisplay);
                 }
             }
         }, "get user")
