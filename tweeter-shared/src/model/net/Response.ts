@@ -248,12 +248,12 @@ export class LoadStatusResponse extends TweeterResponse {
         const jsonObject: LoadStatusResponseJson = json as unknown as LoadStatusResponseJson
 
         let deserializedStatuses = jsonObject._statusItems.map((status) => Status.fromJson(JSON.stringify(status)))
-        if (deserializedStatuses.length === 0){
-            throw new Error (
-                "StoryItemsResponse, could not deserialize statuses with json:\n" +
-                JSON.stringify(jsonObject._statusItems)
-            )
-        }
+        // if (deserializedStatuses.length === 0){
+        //     throw new Error (
+        //         "StoryItemsResponse, could not deserialize statuses with json:\n" +
+        //         JSON.stringify(jsonObject._statusItems)
+        //     )
+        // }
         return new LoadStatusResponse(
             jsonObject._success,
             deserializedStatuses.map((status) => status!).filter((status) => status !== null) as Status[],
