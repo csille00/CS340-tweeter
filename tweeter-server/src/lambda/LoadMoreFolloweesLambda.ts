@@ -22,7 +22,8 @@ export const handler = async (event: UserItemsRequest) => {
         }
 
         return new LoadUserItemsResponse(true, resp[0], resp[1], "Load more followees returned successfully")
-    } catch (e){
+    }  catch (e){
         console.log(e)
+        return new TweeterResponse(false, (e as Error).message)
     }
 }

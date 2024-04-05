@@ -7,10 +7,15 @@ export const handler = async(event: GetUserRequest)=> {
 
     let authToken = AuthToken.fromJson(JSON.stringify(event.authToken))
     if(authToken === null){throw new Error("[AuthError] authToken not found")}
+    try {
+        const resp = await new UserService().getUser(authToken, event.alias)
+        if(resp === undefined){
+            throw new Error("[Not Found] user not found");
+        }
 
-    const resp = await new UserService().getUser(authToken, event.alias)
-    if(resp === undefined){
-        throw new Error("[Not Found] user not found");
+        return new GetUserResponse(true, "getUser returned succesfully", resp);
+    }  catch (e){
+        console.log(e)
+        return new TweeterResponse(false, (e as Error).message)
     }
-    return new GetUserResponse(true, "getUser returned succesfully", resp);
 }

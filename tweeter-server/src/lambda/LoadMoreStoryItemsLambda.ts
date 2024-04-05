@@ -21,8 +21,9 @@ export const handler = async (event: StatusItemsRequest) => {
             throw new Error("[Not Found] status items not found");
         }
         return new LoadStatusResponse(true, resp[0], resp[1], "LoadStory Returned Succesfully")
-    } catch (e){
+    }  catch (e){
         console.log(e)
+        return new TweeterResponse(false, (e as Error).message)
     }
 
 }

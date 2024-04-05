@@ -20,10 +20,16 @@ export class ClientCommunicator {
             console.log("calling ", url, "with", request);
             const resp: Response = await fetch(url, request);
             if (resp.ok) {
-                return await resp.json();
-            } else {
+                const json = await resp.json()
+                if(json._success === false){
+                    throw new Error(json._message);
+                }else{
+                    return json
+                }
+
+            } else if(resp) {
                 const error = await resp.json();
-                throw new Error(error.errorMessage);
+                throw new Error(error.properties.message.type);
             }
 
         } catch (err) {
@@ -31,5 +37,6 @@ export class ClientCommunicator {
                 "Client communicator doPost failed:\n" + (err as Error).message
             );
         }
+        return JSON;
     }
 }

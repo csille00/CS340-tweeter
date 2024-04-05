@@ -1,14 +1,16 @@
 import {DynamoAuthTokenDAO} from "./Dynamo/DynamoAuthTokenDAO";
-import {AuthToken, FollowerStatusRequest, Status, User, UserRequest} from "tweeter-shared";
+import {AuthToken, FollowerStatusRequest, LoginRequest, Status, User, UserRequest} from "tweeter-shared";
 import {DynamoUserDAO} from "./Dynamo/DynamoUserDAO";
 import {UserService} from "../service/UserService";
 import {FollowService} from "../service/FollowService";
 import {StatusService} from "../service/StatusService";
 import {DynamoS3Dao} from "./Dynamo/DynamoS3Dao";
-import { handler } from "../../lambda/FollowerStatusLambda"
+import { handler } from "../../lambda/LoginLambda"
 import {PostStatusRequest, StatusItemsRequest, UserItemsRequest} from "tweeter-shared/dist/model/net/Request";
 import {LoadUserItemsResponse} from "tweeter-shared/dist/model/net/Response";
 import {ServerFacade} from "tweeter-web/src/model/net/ServerFacade";
+import {LoginPresenter} from "tweeter-web/src/presenter/LoginPresenter";
+import {AuthenticationView} from "tweeter-web/src/presenter/AuthenticationPresenter";
 
 const authTokenDao = new DynamoAuthTokenDAO()
 const userDao = new DynamoUserDAO()
@@ -44,6 +46,7 @@ for (let i = 0; i < str.length; i++) {
 
 async function testMain(){
     // const connorUserAndAuth = await userService.login("conman", "asd");
+    // console.log(connorUserAndAuth)
     // const cassidyUserAndAuth = await userService.login( "@cass", "Password123")
     // await userService.follow(connorUserAndAuth[1], cassidyUserAndAuth[0]);
     // const status = new Status("TEST POST", connorUserAndAuth[0], Date.now())
@@ -69,10 +72,10 @@ async function testMain(){
     var loadMoreFollowersJson = {"token":{"_token":"e967f0ff-c97f-4d79-b1e4-597f62cfcbcb","_timestamp":1712289911789},"user":{"_firstName":"Cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"pageSize":10,"lastItem":null} as unknown as UserItemsRequest
     var loadMoreFeedItems = {"token":{"_token":"36747caf-52f3-43f3-8d6b-486b882b83c0","_timestamp":1712312079.005},"user":{"_firstName":"cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"pageSize":10,"lastItem":null} as unknown as StatusItemsRequest
     var isFollowerStatus = {"user":{"_firstName":"cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"token":{"_token":"ad5ff250-93df-4f8e-bd60-adf710b55cf3","_timestamp":1712314452.292},"selectedUser":{"_firstName":"connor","_lastName":"ellis","_alias":"@connor","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@connor-profile-picture"}} as unknown as FollowerStatusRequest
+    var loginJson = {"username":"@timmy","password":"asdf"} as unknown as LoginRequest
+    // var response = await handler(loginJson)
 
-    var response = await handler(isFollowerStatus)
-    // var response = await new ServerFacade().loadMoreFeedItems(loadMoreFeedItems)
-    console.log(response)
+    // console.log(response)
     // console.log(result1, '\n', result2, '\n', result2, '\n', result3, '\n')
 
 }

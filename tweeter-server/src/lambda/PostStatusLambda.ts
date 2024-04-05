@@ -10,7 +10,11 @@ export const handler = async (event: PostStatusRequest): Promise<TweeterResponse
 
         let status = Status.fromJson(JSON.stringify(event.status))
         if(status === null){throw new Error("[Bad Request] status not found")}
-
-        await new StatusService().postStatus(authToken, status);
-        return new TweeterResponse(true, "status posted succesfully")
+        try {
+                await new StatusService().postStatus(authToken, status);
+                return new TweeterResponse(true, "status posted succesfully")
+        }  catch (e){
+                console.log(e)
+                return new TweeterResponse(false, (e as Error).message)
+        }
 }

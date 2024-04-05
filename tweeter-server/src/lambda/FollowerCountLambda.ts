@@ -18,5 +18,6 @@ export const handler = async(event: UserRequest) => {
         return new FollowCountResponse(true, "FollowerCountLambda Suceesfully returned", resp);
     } catch (e){
         console.log(e)
+        return new TweeterResponse(false, (e as Error).message)
     }
 }

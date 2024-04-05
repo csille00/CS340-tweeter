@@ -24,5 +24,6 @@ export const handler = async (event: StatusItemsRequest) => {
         return new LoadStatusResponse(true, resp[0], resp[1], "LoadFeed Returned Succesfully")
     } catch (e){
         console.log(e)
+        return new TweeterResponse(false, (e as Error).message)
     }
 }
