@@ -5,12 +5,13 @@ import {UserService} from "../service/UserService";
 import {FollowService} from "../service/FollowService";
 import {StatusService} from "../service/StatusService";
 import {DynamoS3Dao} from "./Dynamo/DynamoS3Dao";
-import { handler } from "../../lambda/LoginLambda"
+import { handler } from "../../lambda/PostStatusQueueLambda"
 import {PostStatusRequest, StatusItemsRequest, UserItemsRequest} from "tweeter-shared/dist/model/net/Request";
 import {LoadUserItemsResponse} from "tweeter-shared/dist/model/net/Response";
 import {ServerFacade} from "tweeter-web/src/model/net/ServerFacade";
 import {LoginPresenter} from "tweeter-web/src/presenter/LoginPresenter";
 import {AuthenticationView} from "tweeter-web/src/presenter/AuthenticationPresenter";
+import {SHA256} from "crypto-js";
 
 const authTokenDao = new DynamoAuthTokenDAO()
 const userDao = new DynamoUserDAO()
@@ -66,16 +67,44 @@ async function testMain(){
         "lastItem": null
     }
 
+    let mainUsername = "@cat";
+    let followername = "@serpent";
+    let password = "password";
+    let imageUrl = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png";
+    let firstName = "first";
+    let lastName = "last";
+
     var json2 = {"token":{"_token":"6ac0a1b9-44ec-4593-9e40-bc8123fee0a6","_timestamp":1712286806.803},"user":{"_firstName":"cassidellis","_lastName":"ellis","_alias":"@cassidellis","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/{fileName}"},"pageSize":10,"lastItem":null} as unknown as StatusItemsRequest
     var json3 = {"token":{"_token":"eef627fa-9690-4ecd-8b9e-6a767c72ffb2","_timestamp":1712287448.866},"status":{"_post":"@cassidellis hey","user":{"_firstName":"cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":""},"_timestamp":1712273193556,"_segments":[{"_text":"@cassidellis","_startPostion":0,"_endPosition":12,"_type":"Alias"},{"_text":" hey","_startPostion":12,"_endPosition":16,"_type":"Text"}]}} as unknown as PostStatusRequest
     var getFollowerCountJson = {"user":{"_firstName":"Cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"token":{"_token":"e967f0ff-c97f-4d79-b1e4-597f62cfcbcb","_timestamp":1712289911789}} as unknown as UserRequest
-    var loadMoreFollowersJson = {"token":{"_token":"e967f0ff-c97f-4d79-b1e4-597f62cfcbcb","_timestamp":1712289911789},"user":{"_firstName":"Cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"pageSize":10,"lastItem":null} as unknown as UserItemsRequest
+    var loadMoreFollowersJson = {"token":{"_token":"72d6501b-5cf3-4b77-aede-993534a9d2e8","_timestamp":1712726056.572},"user":{"_firstName":"first","_lastName":"last","_alias":"@cat","_imageUrl":"https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"},"pageSize":10,"lastItem":null} as unknown as UserItemsRequest
     var loadMoreFeedItems = {"token":{"_token":"36747caf-52f3-43f3-8d6b-486b882b83c0","_timestamp":1712312079.005},"user":{"_firstName":"cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"pageSize":10,"lastItem":null} as unknown as StatusItemsRequest
     var isFollowerStatus = {"user":{"_firstName":"cassidy","_lastName":"ellis","_alias":"@cass","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@cass-profile-picture"},"token":{"_token":"ad5ff250-93df-4f8e-bd60-adf710b55cf3","_timestamp":1712314452.292},"selectedUser":{"_firstName":"connor","_lastName":"ellis","_alias":"@connor","_imageUrl":"https://lambdas-csille00.s3.us-west-2.amazonaws.com/image/@connor-profile-picture"}} as unknown as FollowerStatusRequest
     var loginJson = {"username":"@timmy","password":"asdf"} as unknown as LoginRequest
+    var postStatusQueue = {
+        Records: [
+            {
+                messageId: '78689fec-417e-4daa-b33a-a5e9322b5943',
+                receiptHandle: 'AQEB+lGZr2hz/s5pp8smYe7A1KOfA9u9ohEYmSTjabnibHYCLeb9mxt8YN/xV0QbUWO3EI9KKi+tOrW3pW1Y5iqD1xTZdw23q43xvv+xjKDxO09gbnNHvjtcHoV8eXncvXW2klrGowMRwb6fFXuwi+uvE9Q+6I15QdaYbHuhODW8G6h6HvAIxiB8Qmxh2QPFDGaqsth5DPZ2aB+V3CrYIBjJ04oCkQJE/vTITDbvJng0mqi0VJziRmSYZwI4sSr+//VdpO+iePo26rOYFVwYfXt5DMUI16eu4qTas7DtkGSaIhTFP+eJ7XQ+7sf1Q7xmeq7xbp+yAthGmASa4osnOsEJU+vNra2IKVMBfHfpYQ8AdCKZxAXIEjo8sM75xcA/vyJvZm1YnjdO6vef8W4YhKLzGQ==',
+                body: '{"_post":"test for feed queue (should be gnarly)","user":{"_firstName":"first","_lastName":"last","_alias":"@cat","_imageUrl":"https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"},"_timestamp":1712722477443,"_segments":[{"_text":"test for feed queue (should be gnarly)","_startPostion":0,"_endPosition":38,"_type":"Text"}]}',
+                attributes: [Object],
+                messageAttributes: {},
+                md5OfBody: '429f1a3c4a5cbcf24724c522aaa0d937',
+                eventSource: 'aws:sqs',
+                eventSourceARN: 'arn:aws:sqs:us-west-2:096981444592:PostStatusQueue',
+                awsRegion: 'us-west-2'
+            }
+        ]
+    }
     // var response = await handler(loginJson)
+    var response = await handler(postStatusQueue)
+    console.log(response)
 
-    // console.log(response)
+    // for(let i = 0; i < 9500; i++){
+    //     try {
+    //         userDao.deleteUser(followername + i)
+    //     } catch (e){}
+    // }
     // console.log(result1, '\n', result2, '\n', result2, '\n', result3, '\n')
 
 }
