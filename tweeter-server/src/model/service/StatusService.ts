@@ -1,7 +1,7 @@
-import {AuthToken, Status, User} from "tweeter-shared";
+import {AuthToken, Status, FeedQueueRequest, User} from "tweeter-shared";
 import {FeedDAO} from "../DAO/interface/FeedDAO";
 import {DynamoFactoryDAO} from "../DAO/DynamoFactoryDAO";
-import {AuthTokenDAO} from "../DAO/interface/AuthTokenDAO";
+import {SendMessageCommand, SQSClient} from "@aws-sdk/client-sqs";
 import {UserDAO} from "../DAO/interface/UserDAO";
 import {StoryDAO} from "../DAO/interface/StoryDAO";
 import {Service} from "./Service";
@@ -13,6 +13,8 @@ export class StatusService extends Service {
     userDAO: UserDAO;
     storyDAO: StoryDAO;
     followsDAO: FollowsDAO;
+    sqsClient: SQSClient;
+
 
     constructor() {
         super()
@@ -21,6 +23,7 @@ export class StatusService extends Service {
         this.userDAO = factoryDAO.getUserDAO()
         this.storyDAO = factoryDAO.getStoryDAO()
         this.followsDAO = factoryDAO.getFollowsDAO()
+        this.sqsClient = new SQSClient();
     }
 
     public async loadMoreStoryItems (
@@ -51,30 +54,60 @@ export class StatusService extends Service {
         newStatus: Status
     ): Promise<void> {
 
-        const userAlias = await this.validateAuthToken(authToken)
-        const result = await this.userDAO.getUserByAlias(userAlias)
-        const user = result[0]
-        if(user === undefined){
-            throw new Error("[Bad Request] user not defined")
+        await this.validateAuthToken(authToken)
+
+        var messageBody = JSON.stringify(newStatus)
+
+        const sqs_url = "https://sqs.us-west-2.amazonaws.com/096981444592/PostStatusQueue";
+
+        const params = {
+            DelaySeconds: 10,
+            MessageBody: messageBody,
+            QueueUrl: sqs_url,
+        };
+
+        try {
+            const data = await this.sqsClient.send(new SendMessageCommand(params));
+            console.log("Success, message sent. MessageID:", data.MessageId);
+        } catch (err) {
+            throw err;
         }
-        await this.storyDAO.postStory(user, newStatus)
+
+    }
+
+    public async postStatusQueue(status: Status): Promise<void> {
+
+        const sqs_url = "https://sqs.us-west-2.amazonaws.com/096981444592/UpdateFeedQueue";
+
+        await this.storyDAO.postStory(status.user, status)
         let hasMoreItems = true;
         let followers: User[] = []
         let lastItem = null;
         while(hasMoreItems){
-            let result = await this.followsDAO.getPageOfFollowers(userAlias, lastItem, 20);
+            let result = await this.followsDAO.getPageOfFollowers(status.user.alias, lastItem, 25);
             if(result){
                 followers = result.values;
+                let aliasArray: string[] = result.values.map((user) => user.alias);
                 hasMoreItems = result.hasMorePages;
                 lastItem = result.values[followers.length - 1]
 
-                for(const follower of followers){
-                    let newFollower = User.fromJson(JSON.stringify(follower))
-                    if(newFollower){
-                        await this.feedDAO.postFeed(newFollower, newStatus)
-                    }
+                //insert into queue
+                const req = new FeedQueueRequest(status, aliasArray)
+
+                const params = {
+                    DelaySeconds: 10,
+                    MessageBody: JSON.stringify(req),
+                    QueueUrl: sqs_url,
+                };
+
+                try {
+                    const data = await this.sqsClient.send(new SendMessageCommand(params));
+                    console.log("Success, message sent. MessageID:", data.MessageId);
+                } catch (err) {
+                    throw err;
                 }
             }
         }
-    };
+    }
+
 }
