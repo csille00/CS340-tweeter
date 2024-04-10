@@ -15,8 +15,8 @@ export class DynamoFollowsDAO implements FollowsDAO{
     readonly indexName = "follows_index";
     readonly followerHandleAttribute = "follower_handle";
     readonly followeeHandleAttribute = "followee_handle";
-    readonly followerUserAttribute = "follower_name";
-    readonly followeeUserAttribute = "followee_name";
+    readonly followerUserAttribute = "follower_user";
+    readonly followeeUserAttribute = "followee_user";
 
     private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient());
     async deleteFollower(follower: User, followee: User): Promise<void> {
