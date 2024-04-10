@@ -15,11 +15,11 @@ export class DynamoUserDAO implements UserDAO{
 
     private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient());
 
-    async deleteUser(user: User): Promise<void> {
+    async deleteUser(user: string): Promise<void> {
         const params = {
             TableName: this.tableName,
             Key: {
-                alias: user.alias,
+                alias: user,
             },
         };
 
