@@ -16,6 +16,16 @@ export class LoginRequest {
     }
 }
 
+export class FeedQueueRequest {
+    message: Status;
+    user: string[];
+    
+    constructor(message: Status, user: string[]) {
+        this.message = message;
+        this.user = user;
+    }
+}
+
 export class RegisterRequest {
     username: string;
     password: string;

@@ -9,5 +9,5 @@ export { DataPage } from "./model/domain/DataPage";
 // uploading to lambda. Instead we have to list each export.
 export { FakeData } from "./util/FakeData";
 
-export {LoginRequest, RegisterRequest, UserRequest, GetUserRequest, LogoutRequest, FollowerStatusRequest, TweeterRequest} from "./model/net/Request";
+export {LoginRequest, RegisterRequest, UserRequest, GetUserRequest, LogoutRequest, FollowerStatusRequest, TweeterRequest, FeedQueueRequest} from "./model/net/Request";
 export {AuthenticateResponse} from "./model/net/Response";
