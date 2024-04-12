@@ -43,11 +43,11 @@ export class DynamoFeedDAO implements FeedDAO{
         return new DataPage<Status>(items, hasMorePages);
     }
 
-    async postFeed(user: User, feed: Status): Promise<void> {
+    async postFeed(alias: string, feed: Status): Promise<void> {
         const params = {
             TableName: this.tableName,
             Item: {
-                [this.aliasAttribute]: user.alias,
+                [this.aliasAttribute]: alias,
                 [this.timeStampAttribute]: feed.timestamp,
                 [this.statusAttribute]: JSON.stringify(feed)
             },
@@ -61,7 +61,5 @@ export class DynamoFeedDAO implements FeedDAO{
             [this.timeStampAttribute]: status.timestamp
         };
     }
-
-
 
 }

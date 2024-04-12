@@ -82,14 +82,18 @@ export class StatusService extends Service {
         await this.storyDAO.postStory(status.user, status)
         let hasMoreItems = true;
         let followers: User[] = []
-        let lastItem = null;
+        let lastItem: User | null = null;
         while(hasMoreItems){
-            let result = await this.followsDAO.getPageOfFollowers(status.user.alias, lastItem, 25);
+            let result = await this.followsDAO.getPageOfFollowers(status.user.alias, lastItem as User, 100);
             if(result){
                 followers = result.values;
-                let aliasArray: string[] = result.values.map((user) => user.alias);
+                const aliasArray: string[] = []
+                result.values.forEach((user) => {
+                    const newUser = User.fromJson(JSON.stringify(user))
+                    if(newUser !== null){ aliasArray.push(newUser.alias) }
+                });
                 hasMoreItems = result.hasMorePages;
-                lastItem = result.values[followers.length - 1]
+                lastItem = User.fromJson(JSON.stringify(result.values[followers.length - 1]))
 
                 //insert into queue
                 const req = new FeedQueueRequest(status, aliasArray)
@@ -107,6 +111,12 @@ export class StatusService extends Service {
                     throw err;
                 }
             }
+        }
+    }
+
+    public async postFeedQueue(status: Status, aliasArray: string[]){
+        for (const alias of aliasArray) {
+            await this.feedDAO.postFeed(alias, status)
         }
     }
 

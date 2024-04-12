@@ -13,7 +13,8 @@ LoadMoreFeedItemsLambda
 LoadMoreStoryItems
 LoadMoreFollowersLambda
 LoadMoreFolloweesLambda
-PostStatusLambda
+post_status_sqs_lambda
+update_feed_sqs
 '
 LAMBDALAYER_ARN=arn:aws:lambda:us-west-2:096981444592:layer:lambdaDependencies:13
 

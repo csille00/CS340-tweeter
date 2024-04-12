@@ -1,7 +1,3 @@
-// import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
-
-// let sqsClient = new SQSClient();
-
 import {Status} from "tweeter-shared";
 import {StatusService} from "../model/service/StatusService";
 
